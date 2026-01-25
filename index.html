@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskPad • Kanban</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topo">
+    <div class="container-header">
+        <h1>📋 TaskPad</h1>
+
+        <div class="header-controls">
+            <select id="filtro-prioridade">
+                <option value="todas">Todas as Prioridades</option>
+                <option value="alta">Alta</option>
+                <option value="media">Média</option>
+                <option value="baixa">Baixa</option>
+            </select>
+
+            <button id="adicionar-tarefa-btn" class="btn-principal">
+                ➕ Nova Tarefa
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="kanban container">
+    <section class="coluna-kanban" data-status="pendente">
+        <h2>🟡 Pendentes</h2>
+        <ul id="lista-tarefas" class="lista-ul"></ul>
+    </section>
+
+    <section class="coluna-kanban" data-status="concluida">
+        <h2>🟢 Concluídas</h2>
+        <ul id="lista-concluidas" class="lista-ul"></ul>
+    </section>
+</main>
+
+<div id="modal-tarefa" class="modal" role="dialog" aria-labelledby="modal-titulo">
+    <div class="modal-conteudo">
+        <header class="modal-header">
+            <h3 id="modal-titulo">Nova Tarefa</h3>
+            <button id="fechar-x-btn" class="btn-fechar" aria-label="Fechar">×</button>
+        </header>
+
+        <form id="form-tarefa">
+            <div class="campo-grupo">
+                <label for="titulo-tarefa">Título *</label>
+                <input type="text" id="titulo-tarefa" required placeholder="Ex: Estudar JavaScript">
+            </div>
+
+            <div class="campo-grupo">
+                <label for="descricao-tarefa">Descrição</label>
+                <textarea id="descricao-tarefa" rows="3" placeholder="Detalhes da tarefa..."></textarea>
+            </div>
+
+            <div class="linha-flex">
+                <div class="campo-grupo">
+                    <label for="data-tarefa">Prazo</label>
+                    <input type="date" id="data-tarefa">
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="prioridade-tarefa">Prioridade</label>
+                    <select id="prioridade-tarefa">
+                        <option value="baixa">Baixa</option>
+                        <option value="media" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="subtarefas-secao">
+                <h4>Subtarefas</h4>
+                <div id="subtarefas-lista"></div>
+                <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">
+                    ➕ Adicionar Subtarefa
+                </button>
+            </div>
+
+            <div class="acoes-modal">
+                <button type="button" id="fechar-modal-btn" class="btn-cancelar">Cancelar</button>
+                <button type="submit" class="btn-salvar">Salvar Tarefa</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

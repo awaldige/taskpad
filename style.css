@@ -1,0 +1,176 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #f4f6f8;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+/* ===== HEADER ===== */
+.topo {
+    background: #1f2937;
+    color: #fff;
+    padding: 1.5rem 0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.container-header {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-controls {
+    display: flex;
+    gap: 12px;
+}
+
+/* ===== BOTÕES ===== */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all .2s ease;
+}
+
+button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+
+.btn-principal { background: #3b82f6; color: #fff; padding: 10px 20px; }
+.btn-secundario { background: #e5e7eb; color: #374151; padding: 8px 14px; margin-top: 10px; font-size: .85rem; }
+.btn-salvar { background: #10b981; color: #fff; padding: 10px 22px; }
+.btn-cancelar { background: #6b7280; color: #fff; padding: 10px 20px; }
+.btn-fechar { background: none; font-size: 1.8rem; color: #9ca3af; line-height: 1; }
+
+/* ===== KANBAN ===== */
+.kanban {
+    display: flex;
+    gap: 25px;
+    padding: 30px 20px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.coluna-kanban {
+    background: #ebedf0;
+    flex: 1;
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 75vh;
+    transition: background 0.3s;
+}
+
+.coluna-kanban h2 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #4b5563;
+}
+
+/* ===== CARD DE TAREFA ===== */
+.tarefa-card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: grab;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    list-style: none;
+    border-left: 5px solid #d1d5db; /* Default */
+}
+
+/* Cores por Prioridade */
+.tarefa-card.alta { border-left-color: #ef4444; }
+.tarefa-card.media { border-left-color: #f59e0b; }
+.tarefa-card.baixa { border-left-color: #10b981; }
+
+.tarefa-card strong { display: block; font-size: 1rem; margin-bottom: 5px; }
+.tarefa-card p { font-size: .85rem; color: #6b7280; margin-bottom: 10px; }
+
+/* BARRA DE PROGRESSO NO CARD */
+.progresso-container {
+    background: #e5e7eb;
+    height: 6px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+.progresso-barra { background: #10b981; height: 100%; transition: width .4s ease; }
+
+/* SUBTAREFAS NO CARD */
+.sub {
+    font-size: 0.8rem;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    cursor: pointer;
+}
+.sub.concluida { text-decoration: line-through; color: #9ca3af; }
+
+.tarefa-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f3f4f6;
+}
+.tarefa-acoes button { background: #f3f4f6; padding: 5px 8px; font-size: 0.9rem; }
+
+/* ===== MODAL ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+.modal.ativo { display: flex; }
+
+.modal-conteudo {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    width: 450px;
+    max-width: 95%;
+    animation: modalEntrada .3s ease-out;
+}
+
+@keyframes modalEntrada {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.campo-grupo { display: flex; flex-direction: column; margin-bottom: 15px; }
+.campo-grupo label { font-size: .85rem; font-weight: 600; margin-bottom: 5px; }
+
+input, textarea, select {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+}
+input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+.subtarefa-input { display: flex; gap: 8px; margin-bottom: 8px; }
+.subtarefa-input input { flex: 1; }
+.subtarefa-input button { background: #fee2e2; color: #ef4444; padding: 0 10px; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .kanban { flex-direction: column; }
+    .container-header { flex-direction: column; gap: 15px; text-align: center; }
+}

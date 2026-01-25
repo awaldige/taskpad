@@ -22,7 +22,7 @@ O projeto permite criar tarefas com **prioridades, prazos, subtarefas**, acompan
 ## 🖼️ Preview
 
 🔗 **Demo online:**  
-👉 https://taskpad.vercel.app
+👉[ https://taskpad.vercel.app](https://taskpad-six.vercel.app/)
 
 ![TaskPad Kanban Preview](preview/taskpad-demo.gif)
 

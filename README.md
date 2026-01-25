@@ -21,9 +21,11 @@ O projeto permite criar tarefas com **prioridades, prazos, subtarefas**, acompan
 
 ## 🖼️ Preview
 
-> 📌 *Adicione aqui uma imagem ou GIF do projeto rodando*
+🔗 **Demo online:**  
+👉 https://taskpad.vercel.app
 
-Exemplo:
+![TaskPad Kanban Preview](preview/taskpad-demo.gif)
+
 
 
 ---

@@ -1,5 +1,44 @@
 # 📋 TaskPad • Kanban de Tarefas
 
+> Aplicação Kanban moderna para gerenciamento de tarefas, desenvolvida em **HTML, CSS e JavaScript puro**, focada em produtividade, organização e ótima experiência do usuário.
+
+O TaskPad permite criar tarefas com prioridades, prazos e subtarefas, acompanhar progresso e organizar tudo via **Drag & Drop**, com persistência automática no navegador.
+
+---
+
+## 🚀 Demo Online
+
+🔗 **Acesse o projeto:**  
+👉 https://taskpad.vercel.app
+
+---
+
+## ✨ Funcionalidades
+
+- ✔ Criar, editar e excluir tarefas
+- ✔ Sistema Kanban (Pendentes / Concluídas)
+- ✔ Drag & Drop entre colunas
+- ✔ Subtarefas com status individual
+- ✔ Barra de progresso automática
+- ✔ Filtro por prioridade
+
+- ✔ Persistência automática via LocalStorage
+- ✔ Interface moderna e responsiva
+- ✔ Marcação automática de tarefas atrasadas
+- ✔ Notificação de prazos do dia
+
+---
+
+## 🖼️ Preview
+![IMG_1227](https://github.com/user-attachments/assets/33f9ff08-18a0-4c1c-97cb-b30a145191a4)
+![IMG_1226](https://github.com/user-attachments/assets/a8ff4013-dc88-4ce8-8385-4f4b6e841c3b)
+![IMG_1225](https://github.com/user-attachments/assets/66f7392e-14fb-4e73-910e-3768550e61a0)
+![IMG_1223](https://github.com/user-attachments/assets/e0347684-4c1a-4379-8b28-54d8f7b8f051)
+![IMG_1222](https://github.com/user-attachments/assets/9103f576-b68c-4173-9455-f4d0d159d419)
+
+
+# 📋 TaskPad • Kanban de Tarefas
+
 TaskPad é uma aplicação **Kanban moderna** para gerenciamento de tarefas, desenvolvida com **HTML, CSS e JavaScript puro**, focada em produtividade, organização e uma ótima experiência do usuário.
 
 O projeto permite criar tarefas com **prioridades, prazos, subtarefas**, acompanhar progresso e organizar tudo usando **Drag & Drop**, com persistência via **LocalStorage**.

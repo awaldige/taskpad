@@ -30,12 +30,13 @@ O TaskPad permite criar tarefas com prioridades, prazos e subtarefas, acompanhar
 ---
 
 ## 🖼️ Preview
-![IMG_1227](https://github.com/user-attachments/assets/33f9ff08-18a0-4c1c-97cb-b30a145191a4)
-![IMG_1226](https://github.com/user-attachments/assets/a8ff4013-dc88-4ce8-8385-4f4b6e841c3b)
-![IMG_1225](https://github.com/user-attachments/assets/66f7392e-14fb-4e73-910e-3768550e61a0)
-![IMG_1223](https://github.com/user-attachments/assets/e0347684-4c1a-4379-8b28-54d8f7b8f051)
-![IMG_1222](https://github.com/user-attachments/assets/9103f576-b68c-4173-9455-f4d0d159d419)
+![IMG_1222](https://github.com/user-attachments/assets/ca59657b-615e-4c23-8952-87fb8e964455)
+![IMG_1223](https://github.com/user-attachments/assets/9a34486c-9937-45d1-87d4-e947ec19c284)
+![IMG_1225](https://github.com/user-attachments/assets/5915ace3-7e69-4318-9d6e-04fd4dd0db1b)
+![IMG_1226](https://github.com/user-attachments/assets/10a01efa-c45a-4d3f-afdc-1409c5846f92)
+![IMG_1227](https://github.com/user-attachments/assets/b681574e-b53e-421d-93fa-cbba10fd8d21)
 
+---
 
 # 📋 TaskPad • Kanban de Tarefas
 

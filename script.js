@@ -1,6 +1,13 @@
 /* =============================
-   ELEMENTOS DO DOM
+   CONFIGURAÇÕES E ESTADO
 ============================= */
+// 🔗 INSIRA A URL DO SEU BACKEND NO RENDER AQUI:
+const API_URL = "https://catalogo-backend-e14g.onrender.com/tarefas"; 
+
+let tarefas = [];
+let editarId = null;
+
+/* ELEMENTOS DO DOM */
 const listaPendentes = document.getElementById('lista-tarefas');
 const listaConcluidas = document.getElementById('lista-concluidas');
 const modal = document.getElementById('modal-tarefa');
@@ -9,24 +16,50 @@ const btnNovaTarefa = document.getElementById('adicionar-tarefa-btn');
 const subtarefasLista = document.getElementById('subtarefas-lista');
 const filtro = document.getElementById('filtro-prioridade');
 
-/* INPUTS DO FORM */
 const inputTitulo = document.getElementById('titulo-tarefa');
 const inputDescricao = document.getElementById('descricao-tarefa');
 const inputData = document.getElementById('data-tarefa');
 const inputPrioridade = document.getElementById('prioridade-tarefa');
 
 /* =============================
-   ESTADO E UTILITÁRIOS
+   COMUNICAÇÃO COM API & STORAGE
 ============================= */
-let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
-let editarId = null;
 
-const gerarId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
-
-function salvar() {
-    localStorage.setItem('tarefas', JSON.stringify(tarefas));
+// Inicialização: Tenta carregar da API, se falhar, usa LocalStorage
+async function inicializarApp() {
+    try {
+        const res = await fetch(API_URL);
+        if (res.ok) {
+            tarefas = await res.json();
+            console.log("✅ Dados carregados da API");
+        } else {
+            throw new Error();
+        }
+    } catch (err) {
+        console.warn("⚠️ API offline. Carregando dados locais...");
+        tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+    }
     renderizar();
 }
+
+async function sincronizar() {
+    // Atualiza o LocalStorage (sempre)
+    localStorage.setItem('tarefas', JSON.stringify(tarefas));
+    
+    // Tenta salvar no Banco de Dados (API)
+    try {
+        await fetch(API_URL, {
+            method: 'POST', // Ou PUT dependendo da sua rota de backend
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tarefas)
+        });
+    } catch (err) {
+        console.error("Falha ao sincronizar com servidor.");
+    }
+    renderizar();
+}
+
+const gerarId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
 /* =============================
    RENDERIZAÇÃO
@@ -38,8 +71,8 @@ function renderizar() {
     tarefas.forEach(t => {
         if (filtro.value !== 'todas' && t.prioridade !== filtro.value) return;
 
-        const totalSub = t.subtarefas.length;
-        const feitasSub = t.subtarefas.filter(s => s.concluida).length;
+        const totalSub = t.subtarefas ? t.subtarefas.length : 0;
+        const feitasSub = t.subtarefas ? t.subtarefas.filter(s => s.concluida).length : 0;
         const percentual = totalSub ? Math.round((feitasSub / totalSub) * 100) : 0;
 
         const li = document.createElement('li');
@@ -48,8 +81,11 @@ function renderizar() {
         li.dataset.id = t.id;
 
         li.innerHTML = `
-            <strong>${t.titulo}</strong>
-            <p>${t.descricao || 'Sem descrição'}</p>
+            <div class="card-info">
+                <strong>${t.titulo}</strong>
+                <p>${t.descricao || 'Sem descrição'}</p>
+                ${t.data ? `<small class="prazo">📅 ${t.data}</small>` : ''}
+            </div>
             
             ${totalSub ? `
                 <div class="progresso-container">
@@ -59,12 +95,12 @@ function renderizar() {
             ` : ''}
 
             <div class="sub-render">
-                ${t.subtarefas.map(s => `
+                ${t.subtarefas ? t.subtarefas.map(s => `
                     <div class="sub ${s.concluida ? 'concluida' : ''}" 
                          data-task="${t.id}" data-sub="${s.id}">
                         ${s.concluida ? '✅' : '⬜'} ${s.texto}
                     </div>
-                `).join('')}
+                `).join('') : ''}
             </div>
 
             <div class="tarefa-acoes">
@@ -84,44 +120,46 @@ function renderizar() {
    EVENTOS (DELEGAÇÃO)
 ============================= */
 document.body.addEventListener('click', e => {
-    const idTask = e.target.dataset.task || e.target.dataset.edit || e.target.dataset.delete || e.target.dataset.toggle;
+    const target = e.target;
+    const idTask = target.dataset.task || target.dataset.edit || target.dataset.delete || target.dataset.toggle;
+    
     if (!idTask) return;
 
     // Toggle Subtarefa
-    if (e.target.dataset.sub) {
-        const t = tarefas.find(x => x.id === e.target.dataset.task);
-        const s = t.subtarefas.find(x => x.id === e.target.dataset.sub);
+    if (target.dataset.sub) {
+        const t = tarefas.find(x => x.id === target.dataset.task);
+        const s = t.subtarefas.find(x => x.id === target.dataset.sub);
         s.concluida = !s.concluida;
-        salvar();
+        sincronizar();
     }
 
     // Excluir
-    if (e.target.dataset.delete) {
+    if (target.dataset.delete) {
         if(confirm("Deseja realmente excluir esta tarefa?")) {
-            tarefas = tarefas.filter(t => t.id !== e.target.dataset.delete);
-            salvar();
+            tarefas = tarefas.filter(t => t.id !== target.dataset.delete);
+            sincronizar();
         }
     }
 
-    // Toggle Status (Concluída/Pendente)
-    if (e.target.dataset.toggle) {
-        const t = tarefas.find(t => t.id === e.target.dataset.toggle);
+    // Toggle Status (Mover entre colunas)
+    if (target.dataset.toggle) {
+        const t = tarefas.find(t => t.id === target.dataset.toggle);
         t.concluida = !t.concluida;
-        salvar();
+        sincronizar();
     }
 
     // Abrir Edição
-    if (e.target.dataset.edit) {
-        editarId = e.target.dataset.edit;
+    if (target.dataset.edit) {
+        editarId = target.dataset.edit;
         const t = tarefas.find(t => t.id === editarId);
         
         inputTitulo.value = t.titulo;
         inputDescricao.value = t.descricao;
-        inputData.value = t.data;
+        inputData.value = t.data || '';
         inputPrioridade.value = t.prioridade;
 
         subtarefasLista.innerHTML = '';
-        t.subtarefas.forEach(s => adicionarInputSubtarefa(s.texto, s.id));
+        if(t.subtarefas) t.subtarefas.forEach(s => adicionarInputSubtarefa(s.texto, s.id));
         
         document.getElementById('modal-titulo').innerText = "Editar Tarefa";
         modal.classList.add('ativo');
@@ -162,7 +200,7 @@ form.onsubmit = e => {
     const novasSubtarefas = [...subtarefasLista.children].map(div => {
         const idItem = div.dataset.id;
         const tAtual = editarId ? tarefas.find(t => t.id === editarId) : null;
-        const subAntiga = tAtual ? tAtual.subtarefas.find(s => s.id === idItem) : null;
+        const subAntiga = tAtual?.subtarefas?.find(s => s.id === idItem);
 
         return {
             id: idItem,
@@ -187,11 +225,11 @@ form.onsubmit = e => {
     }
 
     modal.classList.remove('ativo');
-    salvar();
+    sincronizar();
 };
 
 /* =============================
-   DRAG AND DROP
+   DRAG AND DROP (DESKTOP)
 ============================= */
 function ativarDragDrop() {
     document.querySelectorAll('.tarefa-card').forEach(card => {
@@ -201,18 +239,18 @@ function ativarDragDrop() {
     document.querySelectorAll('.coluna-kanban').forEach(coluna => {
         coluna.ondragover = e => e.preventDefault();
         
-        coluna.ondragenter = () => coluna.style.background = "#e2e8f0";
-        coluna.ondragleave = () => coluna.style.background = "#ebedf0";
-
         coluna.ondrop = e => {
-            coluna.style.background = "#ebedf0";
             const id = e.dataTransfer.getData('id');
             const t = tarefas.find(x => x.id === id);
-            t.concluida = coluna.dataset.status === 'concluida';
-            salvar();
+            if (t) {
+                t.concluida = coluna.dataset.status === 'concluida';
+                sincronizar();
+            }
         };
     });
 }
 
 filtro.onchange = renderizar;
-renderizar();
+
+// Inicia a aplicação
+inicializarApp();

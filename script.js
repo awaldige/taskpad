@@ -1,7 +1,6 @@
 /* =============================
    CONFIGURAÇÕES E ESTADO
 ============================= */
-// 🔗 IMPORTANTE: Mude para o seu link do Render para funcionar no Celular!
 const API_URL = "https://catalogo-backend-e14g.onrender.com/tarefas"; 
 
 let tarefas = [];
@@ -16,22 +15,45 @@ const filtro = document.getElementById('filtro-prioridade');
 /* =============================
    COMUNICAÇÃO COM O SERVIDOR
 ============================= */
+
+// Função de carregar modificada para funcionar no celular instantaneamente
 async function carregarDados() {
-    try {
-        const res = await fetch(API_URL);
-        if (res.ok) {
-            tarefas = await res.json();
-            console.log("✅ Sincronizado com a nuvem");
-        } else { throw new Error(); }
-    } catch (err) {
-        console.warn("⚠️ Servidor offline. Usando LocalStorage.");
-        tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+    // 1. TENTA LER DO LOCALSTORAGE PRIMEIRO (Para o celular não ficar em branco)
+    const dadosLocais = localStorage.getItem('tarefas');
+    if (dadosLocais) {
+        tarefas = JSON.parse(dadosLocais);
+        renderizar();
+        console.log("📱 Dados locais carregados");
     }
-    renderizar();
+
+    // 2. TENTA BUSCAR NO RENDER EM SEGUNDO PLANO
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos de limite
+
+        const res = await fetch(API_URL, { signal: controller.signal });
+        
+        if (res.ok) {
+            const dadosNuvem = await res.json();
+            // Só atualiza se vier algo da nuvem
+            if (dadosNuvem && dadosNuvem.length > 0) {
+                tarefas = dadosNuvem;
+                localStorage.setItem('tarefas', JSON.stringify(tarefas));
+                renderizar();
+                console.log("✅ Nuvem sincronizada");
+            }
+        }
+    } catch (err) {
+        console.warn("🌐 Servidor Render demorou ou está offline. Mantendo dados locais.");
+    }
 }
 
 async function sincronizar() {
+    // Salva localmente primeiro
     localStorage.setItem('tarefas', JSON.stringify(tarefas));
+    renderizar();
+
+    // Tenta mandar para o Render
     try {
         await fetch(API_URL, {
             method: 'POST',
@@ -39,13 +61,12 @@ async function sincronizar() {
             body: JSON.stringify(tarefas)
         });
     } catch (err) {
-        console.error("❌ Erro ao salvar na nuvem.");
+        console.error("❌ Erro ao enviar para nuvem, mas salvo no dispositivo.");
     }
-    renderizar();
 }
 
 /* =============================
-   LÓGICA DAS SUBTAREFAS
+   LÓGICA E RENDERIZAÇÃO
 ============================= */
 const gerarId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
@@ -54,21 +75,18 @@ function adicionarInputSubtarefa(texto = '', concluida = false) {
     div.className = 'subtarefa-input';
     div.style.display = "flex";
     div.style.gap = "5px";
-    div.style.marginBottom = "5px";
+    div.style.marginBottom = "8px";
     div.innerHTML = `
         <input type="checkbox" ${concluida ? 'checked' : ''}>
-        <input type="text" value="${texto}" placeholder="Nome da subtarefa">
-        <button type="button" onclick="this.parentElement.remove()">❌</button>
+        <input type="text" value="${texto}" placeholder="Subtarefa..." style="flex:1">
+        <button type="button" onclick="this.parentElement.remove()" style="background:#fee2e2; color:#ef4444; padding:0 8px;">✕</button>
     `;
     subtarefasLista.appendChild(div);
 }
 
-document.getElementById('adicionar-subtarefa-btn').onclick = () => adicionarInputSubtarefa();
-
-/* =============================
-   RENDERIZAÇÃO (MOSTRA TUDO)
-============================= */
 function renderizar() {
+    if (!listaPendentes || !listaConcluidas) return;
+    
     listaPendentes.innerHTML = '';
     listaConcluidas.innerHTML = '';
 
@@ -78,9 +96,8 @@ function renderizar() {
         const li = document.createElement('li');
         li.className = `tarefa-card ${t.prioridade}`;
         
-        // --- NOVO: Gera a lista visual das subtarefas ---
         const listaSub = (t.subtarefas || []).map(s => `
-            <div style="font-size: 0.8rem; color: #555; margin-left: 10px;">
+            <div style="font-size: 0.8rem; color: #555; margin: 2px 0; display:flex; align-items:center; gap:5px;">
                 ${s.concluida ? '✅' : '⬜'} ${s.texto}
             </div>
         `).join('');
@@ -88,17 +105,15 @@ function renderizar() {
         li.innerHTML = `
             <div class="card-content">
                 <strong>${t.titulo}</strong>
-                <p class="desc">${t.descricao || '<i>Sem descrição</i>'}</p>
-                
-                <div class="exibicao-subtarefas" style="margin: 8px 0; border-left: 2px solid #ddd;">
+                <p class="desc" style="font-size:0.85rem; color:#666;">${t.descricao || ''}</p>
+                <div class="exibicao-subtarefas" style="margin: 8px 0; border-left: 2px solid #ddd; padding-left:8px;">
                     ${listaSub}
                 </div>
-
-                ${t.data ? `<small>📅 Prazo: ${t.data}</small>` : ''}
+                ${t.data ? `<small>📅 ${t.data}</small>` : ''}
             </div>
-            <div class="tarefa-acoes">
-                <button onclick="moverTarefa('${t.id}')">${t.concluida ? '⬅️' : '✔️'}</button>
-                <button onclick="excluirTarefa('${t.id}')">🗑️</button>
+            <div class="tarefa-acoes" style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px; border-top:1px solid #eee; padding-top:8px;">
+                <button onclick="moverTarefa('${t.id}')" style="background:#f0f0f0; padding:5px 10px;">${t.concluida ? '⬅️' : '✔️'}</button>
+                <button onclick="excluirTarefa('${t.id}')" style="background:#fee2e2; color:red; padding:5px 10px;">🗑️</button>
             </div>
         `;
         (t.concluida ? listaConcluidas : listaPendentes).appendChild(li);
@@ -106,7 +121,7 @@ function renderizar() {
 }
 
 /* =============================
-   SALVAMENTO
+   EVENTOS
 ============================= */
 form.onsubmit = e => {
     e.preventDefault();
@@ -135,14 +150,11 @@ form.onsubmit = e => {
 
 window.moverTarefa = (id) => {
     const t = tarefas.find(x => x.id === id);
-    if(t) {
-        t.concluida = !t.concluida;
-        sincronizar();
-    }
+    if(t) { t.concluida = !t.concluida; sincronizar(); }
 };
 
 window.excluirTarefa = (id) => {
-    if(confirm("Deseja excluir?")) {
+    if(confirm("Excluir esta tarefa?")) {
         tarefas = tarefas.filter(x => x.id !== id);
         sincronizar();
     }
@@ -152,7 +164,10 @@ document.getElementById('adicionar-tarefa-btn').onclick = () => {
     subtarefasLista.innerHTML = ''; 
     modal.classList.add('ativo');
 };
+
 document.getElementById('fechar-x-btn').onclick = () => modal.classList.remove('ativo');
+document.getElementById('adicionar-subtarefa-btn').onclick = () => adicionarInputSubtarefa();
 filtro.onchange = renderizar;
 
+// Inicia o processo
 carregarDados();

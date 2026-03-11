@@ -4,67 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TaskPad • Kanban</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.0.1">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+    
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
-<header class="topo">
-    <div class="container-header">
-        <h1>📋 TaskPad</h1>
-        <div class="header-controls">
-            <select id="filtro-prioridade">
-                <option value="todas">Todas</option>
-                <option value="alta">Alta</option>
-                <option value="media">Média</option>
-                <option value="baixa">Baixa</option>
-            </select>
-            <button id="adicionar-tarefa-btn" class="btn-principal">➕ Novo</button>
+    <header class="topo">
+        <div class="container-header">
+            <h1>📋 TaskPad</h1>
+            <div class="header-controls">
+                <button id="adicionar-tarefa-btn" class="btn-principal">➕ Nova Tarefa</button>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main class="kanban">
-    <section class="coluna-kanban">
-        <h2>🟡 Pendentes</h2>
-        <ul id="lista-tarefas" class="lista-ul"></ul>
-    </section>
-    <section class="coluna-kanban">
-        <h2>🟢 Concluídas</h2>
-        <ul id="lista-concluidas" class="lista-ul"></ul>
-    </section>
-</main>
+    <main class="kanban">
+        <section class="coluna-kanban">
+            <h2>🟡 Pendentes</h2>
+            <ul id="lista-tarefas" class="lista-ul"></ul>
+        </section>
 
-<div id="modal-tarefa" class="modal">
-    <div class="modal-conteudo">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <section class="coluna-kanban">
+            <h2>🟢 Concluídas</h2>
+            <ul id="lista-concluidas" class="lista-ul"></ul>
+        </section>
+    </main>
+
+    <div id="modal-tarefa" class="modal">
+        <div class="modal-conteudo">
             <h3>Nova Tarefa</h3>
-            <button id="fechar-x-btn" class="btn-fechar">&times;</button>
+            <form id="form-tarefa">
+                <div class="campo">
+                    <label>Título</label>
+                    <input type="text" id="titulo-tarefa" required placeholder="O que fazer?">
+                </div>
+                <div class="campo">
+                    <label>Descrição</label>
+                    <textarea id="descricao-tarefa" rows="2" placeholder="Detalhes..."></textarea>
+                </div>
+                <div class="campo">
+                    <label>Prioridade</label>
+                    <select id="prioridade-tarefa">
+                        <option value="baixa">Baixa</option>
+                        <option value="media" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="modal-acoes">
+                    <button type="button" id="btn-cancelar" class="btn-secundario">Cancelar</button>
+                    <button type="submit" class="btn-salvar">Salvar Tarefa</button>
+                </div>
+            </form>
         </div>
-        <form id="form-tarefa">
-            <div class="campo-grupo">
-                <label>Título</label>
-                <input type="text" id="titulo-tarefa" required>
-            </div>
-            <div class="campo-grupo">
-                <label>Descrição</label>
-                <textarea id="descricao-tarefa" rows="2"></textarea>
-            </div>
-            <div class="campo-grupo">
-                <label>Prioridade</label>
-                <select id="prioridade-tarefa">
-                    <option value="baixa">Baixa</option>
-                    <option value="media" selected>Média</option>
-                    <option value="alta">Alta</option>
-                </select>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
-                <button type="submit" class="btn-salvar">Salvar</button>
-            </div>
-        </form>
     </div>
-</div>
 
-<script src="script.js?v=1.0.1"></script>
+    <script src="script.js?v=2.0"></script>
 </body>
 </html>

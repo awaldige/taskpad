@@ -1,11 +1,10 @@
 /* =============================
    CONFIGURAÇÕES E ESTADO
 ============================= */
-// 🔗 COLE AQUI A URL DO SEU BACKEND NO RENDER:
-const API_URL = "https://seu-backend-no-render.onrender.com/tarefas"; 
+// 🔗 IMPORTANTE: Mude para o seu link do Render para funcionar no Celular!
+const API_URL = "https://catalogo-backend-e14g.onrender.com/tarefas"; 
 
 let tarefas = [];
-let editarId = null;
 
 const listaPendentes = document.getElementById('lista-tarefas');
 const listaConcluidas = document.getElementById('lista-concluidas');
@@ -17,13 +16,12 @@ const filtro = document.getElementById('filtro-prioridade');
 /* =============================
    COMUNICAÇÃO COM O SERVIDOR
 ============================= */
-
 async function carregarDados() {
     try {
         const res = await fetch(API_URL);
         if (res.ok) {
             tarefas = await res.json();
-            console.log("✅ Dados sincronizados da nuvem");
+            console.log("✅ Sincronizado com a nuvem");
         } else { throw new Error(); }
     } catch (err) {
         console.warn("⚠️ Servidor offline. Usando LocalStorage.");
@@ -54,6 +52,9 @@ const gerarId = () => Date.now().toString(36) + Math.random().toString(36).slice
 function adicionarInputSubtarefa(texto = '', concluida = false) {
     const div = document.createElement('div');
     div.className = 'subtarefa-input';
+    div.style.display = "flex";
+    div.style.gap = "5px";
+    div.style.marginBottom = "5px";
     div.innerHTML = `
         <input type="checkbox" ${concluida ? 'checked' : ''}>
         <input type="text" value="${texto}" placeholder="Nome da subtarefa">
@@ -65,7 +66,7 @@ function adicionarInputSubtarefa(texto = '', concluida = false) {
 document.getElementById('adicionar-subtarefa-btn').onclick = () => adicionarInputSubtarefa();
 
 /* =============================
-   RENDERIZAÇÃO (EXIBE DESCRIÇÃO)
+   RENDERIZAÇÃO (MOSTRA TUDO)
 ============================= */
 function renderizar() {
     listaPendentes.innerHTML = '';
@@ -77,16 +78,23 @@ function renderizar() {
         const li = document.createElement('li');
         li.className = `tarefa-card ${t.prioridade}`;
         
-        // Contagem de subtarefas
-        const totalSub = t.subtarefas ? t.subtarefas.length : 0;
-        const feitasSub = t.subtarefas ? t.subtarefas.filter(s => s.concluida).length : 0;
+        // --- NOVO: Gera a lista visual das subtarefas ---
+        const listaSub = (t.subtarefas || []).map(s => `
+            <div style="font-size: 0.8rem; color: #555; margin-left: 10px;">
+                ${s.concluida ? '✅' : '⬜'} ${s.texto}
+            </div>
+        `).join('');
 
         li.innerHTML = `
             <div class="card-content">
                 <strong>${t.titulo}</strong>
                 <p class="desc">${t.descricao || '<i>Sem descrição</i>'}</p>
-                ${t.data ? `<small>📅 ${t.data}</small>` : ''}
-                ${totalSub > 0 ? `<div class="sub-progresso">${feitasSub}/${totalSub} subtarefas</div>` : ''}
+                
+                <div class="exibicao-subtarefas" style="margin: 8px 0; border-left: 2px solid #ddd;">
+                    ${listaSub}
+                </div>
+
+                ${t.data ? `<small>📅 Prazo: ${t.data}</small>` : ''}
             </div>
             <div class="tarefa-acoes">
                 <button onclick="moverTarefa('${t.id}')">${t.concluida ? '⬅️' : '✔️'}</button>
@@ -98,12 +106,11 @@ function renderizar() {
 }
 
 /* =============================
-   SALVAMENTO DO FORMULÁRIO
+   SALVAMENTO
 ============================= */
 form.onsubmit = e => {
     e.preventDefault();
 
-    // Captura as subtarefas do modal
     const subs = [...subtarefasLista.querySelectorAll('.subtarefa-input')].map(div => ({
         texto: div.querySelector('input[type="text"]').value,
         concluida: div.querySelector('input[type="checkbox"]').checked
@@ -126,11 +133,12 @@ form.onsubmit = e => {
     sincronizar();
 };
 
-// Funções globais
 window.moverTarefa = (id) => {
     const t = tarefas.find(x => x.id === id);
-    t.concluida = !t.concluida;
-    sincronizar();
+    if(t) {
+        t.concluida = !t.concluida;
+        sincronizar();
+    }
 };
 
 window.excluirTarefa = (id) => {
@@ -140,7 +148,10 @@ window.excluirTarefa = (id) => {
     }
 };
 
-document.getElementById('adicionar-tarefa-btn').onclick = () => modal.classList.add('ativo');
+document.getElementById('adicionar-tarefa-btn').onclick = () => {
+    subtarefasLista.innerHTML = ''; 
+    modal.classList.add('ativo');
+};
 document.getElementById('fechar-x-btn').onclick = () => modal.classList.remove('ativo');
 filtro.onchange = renderizar;
 

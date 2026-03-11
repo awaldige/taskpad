@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>TaskPad • Kanban</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,60 +13,55 @@
 <header class="topo">
     <div class="container-header">
         <h1>📋 TaskPad</h1>
-
         <div class="header-controls">
             <select id="filtro-prioridade">
-                <option value="todas">Todas as Prioridades</option>
+                <option value="todas">Todas</option>
                 <option value="alta">Alta</option>
                 <option value="media">Média</option>
                 <option value="baixa">Baixa</option>
             </select>
-
-            <button id="adicionar-tarefa-btn" class="btn-principal">
-                ➕ Nova Tarefa
-            </button>
+            <button id="adicionar-tarefa-btn" class="btn-principal">➕ Nova Tarefa</button>
         </div>
     </div>
 </header>
 
 <main class="kanban container">
-    <section class="coluna-kanban" data-status="pendente">
+    <section class="coluna-kanban">
         <h2>🟡 Pendentes</h2>
         <ul id="lista-tarefas" class="lista-ul"></ul>
     </section>
 
-    <section class="coluna-kanban" data-status="concluida">
+    <section class="coluna-kanban">
         <h2>🟢 Concluídas</h2>
         <ul id="lista-concluidas" class="lista-ul"></ul>
     </section>
 </main>
 
-<div id="modal-tarefa" class="modal" role="dialog" aria-labelledby="modal-titulo">
+<div id="modal-tarefa" class="modal">
     <div class="modal-conteudo">
         <header class="modal-header">
-            <h3 id="modal-titulo">Nova Tarefa</h3>
-            <button id="fechar-x-btn" class="btn-fechar" aria-label="Fechar">×</button>
+            <h3>Nova Tarefa</h3>
+            <button id="fechar-x-btn" class="btn-fechar">×</button>
         </header>
 
         <form id="form-tarefa">
             <div class="campo-grupo">
-                <label for="titulo-tarefa">Título *</label>
-                <input type="text" id="titulo-tarefa" required placeholder="Ex: Estudar JavaScript">
+                <label>Título *</label>
+                <input type="text" id="titulo-tarefa" required placeholder="O que precisa ser feito?">
             </div>
 
             <div class="campo-grupo">
-                <label for="descricao-tarefa">Descrição</label>
-                <textarea id="descricao-tarefa" rows="3" placeholder="Detalhes da tarefa..."></textarea>
+                <label>Descrição</label>
+                <textarea id="descricao-tarefa" rows="2" placeholder="Detalhes..."></textarea>
             </div>
 
             <div class="linha-flex">
                 <div class="campo-grupo">
-                    <label for="data-tarefa">Prazo</label>
+                    <label>Prazo</label>
                     <input type="date" id="data-tarefa">
                 </div>
-
                 <div class="campo-grupo">
-                    <label for="prioridade-tarefa">Prioridade</label>
+                    <label>Prioridade</label>
                     <select id="prioridade-tarefa">
                         <option value="baixa">Baixa</option>
                         <option value="media" selected>Média</option>
@@ -80,14 +73,12 @@
             <div class="subtarefas-secao">
                 <h4>Subtarefas</h4>
                 <div id="subtarefas-lista"></div>
-                <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">
-                    ➕ Adicionar Subtarefa
-                </button>
+                <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">➕ Subtarefa</button>
             </div>
 
             <div class="acoes-modal">
                 <button type="button" id="fechar-modal-btn" class="btn-cancelar">Cancelar</button>
-                <button type="submit" class="btn-salvar">Salvar Tarefa</button>
+                <button type="submit" class="btn-salvar">Salvar</button>
             </div>
         </form>
     </div>

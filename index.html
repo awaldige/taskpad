@@ -2,87 +2,69 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskPad • Kanban Local</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TaskPad • Kanban</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.0.1">
 </head>
 <body>
 
-    <header class="topo">
-        <div class="container-header">
-            <h1>📋 TaskPad</h1>
-            <div class="header-controls">
-                <select id="filtro-prioridade">
-                    <option value="todas">Todas</option>
-                    <option value="alta">Alta</option>
-                    <option value="media">Média</option>
-                    <option value="baixa">Baixa</option>
-                </select>
-                <button id="adicionar-tarefa-btn" class="btn-principal">➕ Nova Tarefa</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="kanban">
-        <section class="coluna-kanban">
-            <h2>🟡 Pendentes</h2>
-            <ul id="lista-tarefas" class="lista-ul"></ul>
-        </section>
-
-        <section class="coluna-kanban">
-            <h2>🟢 Concluídas</h2>
-            <ul id="lista-concluidas" class="lista-ul"></ul>
-        </section>
-    </main>
-
-    <div id="modal-tarefa" class="modal">
-        <div class="modal-conteudo">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3>Nova Tarefa</h3>
-                <button id="fechar-x-btn" class="btn-fechar">&times;</button>
-            </div>
-
-            <form id="form-tarefa">
-                <div class="campo-grupo">
-                    <label>Título *</label>
-                    <input type="text" id="titulo-tarefa" required placeholder="O que precisa ser feito?">
-                </div>
-
-                <div class="campo-grupo">
-                    <label>Descrição</label>
-                    <textarea id="descricao-tarefa" rows="2" placeholder="Detalhes opcionais..."></textarea>
-                </div>
-
-                <div class="linha-flex" style="display: flex; gap: 10px;">
-                    <div class="campo-grupo" style="flex: 1;">
-                        <label>Prazo</label>
-                        <input type="date" id="data-tarefa">
-                    </div>
-                    <div class="campo-grupo" style="flex: 1;">
-                        <label>Prioridade</label>
-                        <select id="prioridade-tarefa">
-                            <option value="baixa">Baixa</option>
-                            <option value="media" selected>Média</option>
-                            <option value="alta">Alta</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="subtarefas-secao">
-                    <label style="font-weight: 600; font-size: 0.85rem;">Subtarefas</label>
-                    <div id="subtarefas-lista" style="margin-top: 10px;"></div>
-                    <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">➕ Adicionar Subtarefa</button>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button type="button" id="fechar-modal-btn" class="btn-cancelar">Cancelar</button>
-                    <button type="submit" class="btn-salvar">Salvar</button>
-                </div>
-            </form>
+<header class="topo">
+    <div class="container-header">
+        <h1>📋 TaskPad</h1>
+        <div class="header-controls">
+            <select id="filtro-prioridade">
+                <option value="todas">Todas</option>
+                <option value="alta">Alta</option>
+                <option value="media">Média</option>
+                <option value="baixa">Baixa</option>
+            </select>
+            <button id="adicionar-tarefa-btn" class="btn-principal">➕ Novo</button>
         </div>
     </div>
+</header>
 
-    <script src="script.js"></script>
+<main class="kanban">
+    <section class="coluna-kanban">
+        <h2>🟡 Pendentes</h2>
+        <ul id="lista-tarefas" class="lista-ul"></ul>
+    </section>
+    <section class="coluna-kanban">
+        <h2>🟢 Concluídas</h2>
+        <ul id="lista-concluidas" class="lista-ul"></ul>
+    </section>
+</main>
+
+<div id="modal-tarefa" class="modal">
+    <div class="modal-conteudo">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Nova Tarefa</h3>
+            <button id="fechar-x-btn" class="btn-fechar">&times;</button>
+        </div>
+        <form id="form-tarefa">
+            <div class="campo-grupo">
+                <label>Título</label>
+                <input type="text" id="titulo-tarefa" required>
+            </div>
+            <div class="campo-grupo">
+                <label>Descrição</label>
+                <textarea id="descricao-tarefa" rows="2"></textarea>
+            </div>
+            <div class="campo-grupo">
+                <label>Prioridade</label>
+                <select id="prioridade-tarefa">
+                    <option value="baixa">Baixa</option>
+                    <option value="media" selected>Média</option>
+                    <option value="alta">Alta</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button type="submit" class="btn-salvar">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="script.js?v=1.0.1"></script>
 </body>
 </html>

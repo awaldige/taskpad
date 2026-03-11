@@ -1,90 +1,78 @@
 /* =============================
-   RESET E CONFIGURAÇÕES GERAIS
+   RESET E VARIÁVEIS
 ============================= */
 * {
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:root {
+    --bg-body: #f4f7f9;
+    --bg-card: #ffffff;
+    --primary: #3b82f6;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
 }
 
 body {
-    background: #f4f6f8;
-    color: #1f2937;
-    line-height: 1.5;
-    padding-bottom: 40px;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
 }
 
 /* =============================
    HEADER (TOPO)
 ============================= */
 .topo {
-    background: #1f2937;
-    color: #fff;
-    padding: 1.5rem 0;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    background: #111827;
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .container-header {
-    max-width: 1100px;
+    max-width: 1000px;
     margin: auto;
-    padding: 0 20px;
+    padding: 0 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.header-controls {
-    display: flex;
-    gap: 12px;
-}
-
 /* =============================
-   BOTÕES
-============================= */
-button {
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all .2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-button:hover { filter: brightness(1.1); transform: translateY(-1px); }
-button:active { transform: scale(0.98); }
-
-.btn-principal { background: #3b82f6; color: #fff; padding: 10px 20px; }
-.btn-secundario { background: #e5e7eb; color: #374151; padding: 8px 14px; margin-top: 10px; font-size: .85rem; width: 100%; }
-.btn-salvar { background: #10b981; color: #fff; padding: 10px 22px; }
-.btn-cancelar { background: #6b7280; color: #fff; padding: 10px 20px; }
-.btn-fechar { background: none; font-size: 1.8rem; color: #9ca3af; line-height: 1; }
-
-/* =============================
-   KANBAN (COLUNAS)
+   LAYOUT KANBAN
 ============================= */
 .kanban {
     display: flex;
-    gap: 25px;
-    padding: 30px 20px;
-    max-width: 1100px;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1000px;
     margin: auto;
+    align-items: flex-start;
 }
 
 .coluna-kanban {
-    background: #ebedf0;
+    background: #e5e7eb;
     flex: 1;
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
-    min-height: 75vh;
+    min-height: 70vh;
 }
 
 .coluna-kanban h2 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    margin-bottom: 15px;
     color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -95,50 +83,68 @@ button:active { transform: scale(0.98); }
 }
 
 /* =============================
-   CARD DE TAREFA
+   CARDS DE TAREFA
 ============================= */
 .tarefa-card {
-    background: #fff;
+    background: var(--bg-card);
     padding: 16px;
     border-radius: 10px;
     margin-bottom: 15px;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    border-left: 5px solid #d1d5db;
-    transition: transform 0.2s;
+    border-left: 6px solid #d1d5db;
+    transition: transform 0.2s ease;
 }
 
-.tarefa-card:hover { transform: translateX(5px); }
+.tarefa-card:active {
+    transform: scale(0.98);
+}
 
-/* Cores por Prioridade */
-.tarefa-card.alta { border-left-color: #ef4444; }
-.tarefa-card.media { border-left-color: #f59e0b; }
-.tarefa-card.baixa { border-left-color: #10b981; }
+/* Cores de Prioridade */
+.tarefa-card.alta { border-left-color: var(--danger); }
+.tarefa-card.media { border-left-color: var(--warning); }
+.tarefa-card.baixa { border-left-color: var(--success); }
 
-.tarefa-card strong { display: block; font-size: 1rem; margin-bottom: 5px; color: #111827; }
-.tarefa-card p.desc { font-size: .85rem; color: #6b7280; margin-bottom: 10px; }
+.tarefa-card strong {
+    display: block;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
 
-/* Subtarefas dentro do Card */
+.tarefa-card p.desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
 .exibicao-subtarefas {
     background: #f9fafb;
-    padding: 8px;
     border-radius: 6px;
+    padding: 8px;
     margin: 10px 0;
-    border-left: 2px solid #ddd;
 }
 
-.tarefa-acoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid #f3f4f6;
+/* =============================
+   BOTÕES E AÇÕES
+============================= */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s;
+    touch-action: manipulation; /* Melhora o clique no celular */
+}
+
+.btn-principal {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
 }
 
 .tarefa-acoes button {
-    background: #f3f4f6;
-    padding: 6px 12px;
     font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* =============================
@@ -149,49 +155,43 @@ button:active { transform: scale(0.98); }
     inset: 0;
     background: rgba(0,0,0,0.6);
     display: none;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(3px);
-    padding: 20px;
+    justify-content: center;
+    z-index: 200;
+    padding: 15px;
+    backdrop-filter: blur(4px);
 }
 
-.modal.ativo { display: flex; }
+.modal.ativo {
+    display: flex;
+}
 
 .modal-conteudo {
-    background: #fff;
+    background: white;
     padding: 25px;
     border-radius: 16px;
-    width: 450px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 450px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
 }
 
-.campo-grupo { display: flex; flex-direction: column; margin-bottom: 15px; }
-.campo-grupo label { font-size: .85rem; font-weight: 600; margin-bottom: 5px; color: #374151; }
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
 
 input, textarea, select {
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    outline: none;
     font-size: 1rem;
-    transition: border-color 0.2s;
-}
-
-input:focus, textarea:focus { border-color: #3b82f6; }
-
-.subtarefa-input {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-    align-items: center;
+    margin-top: 5px;
 }
 
 /* =============================
-   RESPONSIVIDADE (MOBILE)
+   RESPONSIVIDADE (CELULAR)
 ============================= */
 @media (max-width: 768px) {
     .kanban {
@@ -199,18 +199,17 @@ input:focus, textarea:focus { border-color: #3b82f6; }
         padding: 15px;
     }
 
-    .container-header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-
-    .header-controls {
-        width: 100%;
-        flex-direction: column;
-    }
-
     .coluna-kanban {
+        width: 100%;
         min-height: auto;
+    }
+
+    .container-header h1 {
+        font-size: 1.2rem;
+    }
+
+    /* Aumenta botões no celular para facilitar o toque */
+    .tarefa-acoes button {
+        padding: 12px 20px;
     }
 }

@@ -15,7 +15,7 @@
         <h1>📋 TaskPad</h1>
         <div class="header-controls">
             <select id="filtro-prioridade">
-                <option value="todas">Todas</option>
+                <option value="todas">Todas as Prioridades</option>
                 <option value="alta">Alta</option>
                 <option value="media">Média</option>
                 <option value="baixa">Baixa</option>
@@ -46,22 +46,22 @@
 
         <form id="form-tarefa">
             <div class="campo-grupo">
-                <label>Título *</label>
-                <input type="text" id="titulo-tarefa" required placeholder="O que precisa ser feito?">
+                <label for="titulo-tarefa">Título *</label>
+                <input type="text" id="titulo-tarefa" required placeholder="Ex: Estudar JavaScript">
             </div>
 
             <div class="campo-grupo">
-                <label>Descrição</label>
-                <textarea id="descricao-tarefa" rows="2" placeholder="Detalhes..."></textarea>
+                <label for="descricao-tarefa">Descrição</label>
+                <textarea id="descricao-tarefa" rows="3" placeholder="Detalhes da tarefa..."></textarea>
             </div>
 
             <div class="linha-flex">
                 <div class="campo-grupo">
-                    <label>Prazo</label>
+                    <label for="data-tarefa">Prazo</label>
                     <input type="date" id="data-tarefa">
                 </div>
                 <div class="campo-grupo">
-                    <label>Prioridade</label>
+                    <label for="prioridade-tarefa">Prioridade</label>
                     <select id="prioridade-tarefa">
                         <option value="baixa">Baixa</option>
                         <option value="media" selected>Média</option>
@@ -73,12 +73,12 @@
             <div class="subtarefas-secao">
                 <h4>Subtarefas</h4>
                 <div id="subtarefas-lista"></div>
-                <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">➕ Subtarefa</button>
+                <button type="button" id="adicionar-subtarefa-btn" class="btn-secundario">➕ Adicionar Subtarefa</button>
             </div>
 
             <div class="acoes-modal">
                 <button type="button" id="fechar-modal-btn" class="btn-cancelar">Cancelar</button>
-                <button type="submit" class="btn-salvar">Salvar</button>
+                <button type="submit" class="btn-salvar">Salvar Tarefa</button>
             </div>
         </form>
     </div>

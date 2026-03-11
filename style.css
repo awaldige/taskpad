@@ -1,34 +1,34 @@
 :root {
     --primary: #3182ce;
     --bg: #f4f7f9;
-    --card-bg: #ffffff;
+    --white: #ffffff;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
 
-body { background-color: var(--bg); color: #1a202c; -webkit-tap-highlight-color: transparent; }
+body { background-color: var(--bg); color: #1a202c; line-height: 1.5; }
 
 .main-header { background: #1a202c; color: white; padding: 12px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-.header-container { max-width: 900px; margin: auto; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; }
+.header-container { max-width: 800px; margin: auto; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; }
 
 .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* Grid do Kanban */
-.board { display: flex; gap: 20px; padding: 20px; max-width: 900px; margin: auto; align-items: flex-start; }
+/* Grid Kanban */
+.board { display: flex; gap: 20px; padding: 20px; max-width: 800px; margin: auto; align-items: flex-start; }
 .column { flex: 1; background: #ebedf0; padding: 15px; border-radius: 12px; min-height: 150px; }
-.column h2 { font-size: 0.85rem; color: #4a5568; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+.column h2 { font-size: 0.85rem; color: #4a5568; text-transform: uppercase; margin-bottom: 12px; border-bottom: 2px solid #cbd5e0; padding-bottom: 5px; }
 
-/* Cards Otimizados para Toque */
+/* Cards */
 .task-list { list-style: none; }
 .card { 
-    background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 12px; 
+    background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 12px; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
 }
-.card strong { display: block; font-size: 1.05rem; margin-bottom: 4px; }
-.card p { font-size: 0.9rem; color: #718096; }
+.card strong { display: block; font-size: 1.05rem; }
+.card p { font-size: 0.9rem; color: #718096; margin-top: 4px; }
 
-.card-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
-.btn-act { background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
+.card-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+.btn-act { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; }
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; backdrop-filter: blur(2px); }
@@ -40,9 +40,8 @@ input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-
 .btn-save { background: var(--primary); color: white; flex: 2; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
 .btn-cancel { background: #edf2f7; color: #4a5568; flex: 1; padding: 12px; border: none; border-radius: 8px; }
 
-/* RESPONSIVIDADE (MOBILE) */
+/* Responsividade Mobile */
 @media (max-width: 768px) {
     .board { flex-direction: column; padding: 15px; }
     .column { width: 100%; margin-bottom: 10px; }
-    .main-header h1 { font-size: 1.2rem; }
 }

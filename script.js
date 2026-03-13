@@ -1,126 +1,205 @@
-/* =============================
-    ESTADO E PERSISTÊNCIA
-============================= */
-const KEY = 'taskpad_v_final_local';
-const CHAVES_ANTIGAS = ['tarefas', 'taskpad_v_final_data', 'taskpad_v_premium', 'tasks_v10'];
+// --- ESTADO DA APLICAÇÃO ---
+let tasks = JSON.parse(localStorage.getItem('taskpad_data')) || [];
 
-function carregarDados() {
-    const dadosAtuais = localStorage.getItem(KEY);
-    if (!dadosAtuais) {
-        // Tenta recuperar de versões passadas para não perder nada
-        for (const chave of CHAVES_ANTIGAS) {
-            const backup = localStorage.getItem(chave);
-            if (backup) {
-                console.log("Recuperado de: " + chave);
-                return JSON.parse(backup);
-            }
-        }
+const DOM = {
+    modal: document.getElementById('task-modal'),
+    form: document.getElementById('task-form'),
+    taskTitle: document.getElementById('task-title'),
+    taskDesc: document.getElementById('task-desc'),
+    columns: {
+        todo: document.getElementById('todo-list'),
+        doing: document.getElementById('doing-list'),
+        done: document.getElementById('done-list')
+    },
+    openModalBtn: document.getElementById('open-modal'),
+    closeModalBtn: document.getElementById('close-modal')
+};
+
+// --- INICIALIZAÇÃO ---
+document.addEventListener('DOMContentLoaded', () => {
+    renderTasks();
+    setupDragAndDrop();
+    checkDeadlines();
+});
+
+// --- GERENCIAMENTO DE TAREFAS ---
+
+function openModal(editId = null) {
+    DOM.modal.classList.add('active');
+    DOM.modal.setAttribute('aria-hidden', 'false');
+    
+    if (editId) {
+        const task = tasks.find(t => t.id === editId);
+        DOM.taskTitle.value = task.title;
+        DOM.taskDesc.value = task.desc;
+        DOM.form.dataset.editId = editId;
+        document.getElementById('modal-title').innerText = "Editar Tarefa";
+    } else {
+        DOM.form.reset();
+        delete DOM.form.dataset.editId;
+        document.getElementById('modal-title').innerText = "Nova Tarefa";
     }
-    return dadosAtuais ? JSON.parse(dadosAtuais) : [];
 }
 
-let tarefas = carregarDados();
+function closeModal() {
+    DOM.modal.classList.remove('active');
+    DOM.modal.setAttribute('aria-hidden', 'true');
+}
 
-/* =============================
-    CAPTURA DE ELEMENTOS
-============================= */
-const todoList = document.getElementById('todo-list');
-const doneList = document.getElementById('done-list');
-const modal = document.getElementById('task-modal');
-const btnOpen = document.getElementById('open-modal');
-const btnClose = document.getElementById('close-modal');
-const btnSave = document.getElementById('save-task');
-
-/* =============================
-    RENDERIZAÇÃO
-============================= */
-function renderizar() {
-    if (!todoList || !doneList) return;
+DOM.form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const editId = DOM.form.dataset.editId;
     
-    todoList.innerHTML = '';
-    doneList.innerHTML = '';
+    const taskData = {
+        id: editId || Date.now().toString(),
+        title: DOM.taskTitle.value,
+        desc: DOM.taskDesc.value,
+        status: editId ? tasks.find(t => t.id === editId).status : 'todo',
+        subtasks: editId ? tasks.find(t => t.id === editId).subtasks : [],
+        priority: 'media', // Pode ser expandido para um select
+        createdAt: new Date().toISOString()
+    };
 
-    tarefas.forEach(t => {
-        // Compatibilidade com dados antigos
-        const titulo = t.titulo || t.t || t.txt || "Sem título";
-        const desc = t.desc || t.descricao || t.d || "";
-        const concluida = t.concluida || t.ok || false;
-        const id = t.id || Date.now() + Math.random();
+    if (editId) {
+        tasks = tasks.map(t => t.id === editId ? taskData : t);
+    } else {
+        tasks.push(taskData);
+    }
 
-        const li = document.createElement('li');
-        li.className = 'card';
-        if (concluida) li.style.borderLeftColor = '#48bb78';
+    saveAndRender();
+    closeModal();
+});
 
-        li.innerHTML = `
-            <div>
-                <strong>${titulo}</strong>
-                <p>${desc}</p>
+function deleteTask(id) {
+    if(confirm('Deseja excluir esta tarefa?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveAndRender();
+    }
+}
+
+// --- SUBTAREFAS E PROGRESSO ---
+
+function addSubtask(taskId) {
+    const text = prompt("Nome da subtarefa:");
+    if (!text) return;
+    
+    tasks = tasks.map(t => {
+        if (t.id === taskId) {
+            t.subtasks.push({ id: Date.now(), text, completed: false });
+        }
+        return t;
+    });
+    saveAndRender();
+}
+
+function toggleSubtask(taskId, subId) {
+    tasks = tasks.map(t => {
+        if (t.id === taskId) {
+            t.subtasks = t.subtasks.map(s => s.id === subId ? {...s, completed: !s.completed} : s);
+        }
+        return t;
+    });
+    saveAndRender();
+}
+
+function calculateProgress(subtasks) {
+    if (subtasks.length === 0) return 0;
+    const done = subtasks.filter(s => s.completed).length;
+    return Math.round((done / subtasks.length) * 100);
+}
+
+// --- DRAG & DROP ---
+
+function setupDragAndDrop() {
+    const lists = document.querySelectorAll('.task-list');
+    
+    lists.forEach(list => {
+        list.addEventListener('dragover', e => {
+            e.preventDefault();
+            list.classList.add('drag-over');
+        });
+
+        list.addEventListener('dragleave', () => list.classList.remove('drag-over'));
+
+        list.addEventListener('drop', e => {
+            const id = e.dataTransfer.getData('text/plain');
+            const newStatus = list.dataset.status;
+            
+            tasks = tasks.map(t => t.id === id ? {...t, status: newStatus} : t);
+            list.classList.remove('drag-over');
+            saveAndRender();
+        });
+    });
+}
+
+// --- RENDERIZAÇÃO ---
+
+function renderTasks() {
+    // Limpar listas
+    Object.values(DOM.columns).forEach(col => col.innerHTML = '');
+
+    tasks.forEach(task => {
+        const progress = calculateProgress(task.subtasks);
+        
+        const card = document.createElement('li');
+        card.className = 'card';
+        card.draggable = true;
+        card.innerHTML = `
+            <div onclick="openModal('${task.id}')">
+                <strong>${task.title}</strong>
+                <p>${task.desc}</p>
+                
+                ${task.subtasks.length > 0 ? `
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                    <small>${progress}% concluído</small>
+                ` : ''}
             </div>
+
+            <ul class="subtask-list">
+                ${task.subtasks.map(s => `
+                    <li class="${s.completed ? 'done' : ''}" onclick="toggleSubtask('${task.id}', ${s.id})">
+                        ${s.completed ? '✅' : '⬜'} ${s.text}
+                    </li>
+                `).join('')}
+            </ul>
+
             <div class="card-actions">
-                <button class="btn-act" onclick="trocarStatus('${id}')">${concluida ? '⬅️' : '✔️'}</button>
-                <button class="btn-act" onclick="deletarTarefa('${id}')" style="color:red">🗑️</button>
+                <button class="btn-act" onclick="addSubtask('${task.id}')" title="Add Subtarefa">➕</button>
+                <button class="btn-act" onclick="deleteTask('${task.id}')" title="Excluir">🗑️</button>
             </div>
         `;
 
-        concluida ? doneList.appendChild(li) : todoList.appendChild(li);
-    });
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', task.id);
+            card.style.opacity = '0.5';
+        });
 
-    localStorage.setItem(KEY, JSON.stringify(tarefas));
+        card.addEventListener('dragend', () => card.style.opacity = '1');
+
+        DOM.columns[task.status].appendChild(card);
+    });
 }
 
-/* =============================
-    FUNÇÕES GLOBAIS (WINDOW)
-============================= */
-window.trocarStatus = (id) => {
-    const t = tarefas.find(item => item.id == id);
-    if (t) {
-        t.concluida = !t.concluida;
-        if (t.hasOwnProperty('ok')) t.ok = t.concluida;
-        renderizar();
+function saveAndRender() {
+    localStorage.setItem('taskpad_data', JSON.stringify(tasks));
+    renderTasks();
+}
+
+// --- NOTIFICAÇÕES E PRAZOS ---
+function checkDeadlines() {
+    // Exemplo simplificado: Notifica se houver tarefas "todo" ao abrir
+    const pending = tasks.filter(t => t.status === 'todo').length;
+    if (pending > 0 && "Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                new Notification("TaskPad", { body: `Você tem ${pending} tarefas pendentes para hoje!` });
+            }
+        });
     }
-};
+}
 
-window.deletarTarefa = (id) => {
-    if (confirm("Deseja apagar esta tarefa?")) {
-        tarefas = tarefas.filter(item => item.id != id);
-        renderizar();
-    }
-};
-
-/* =============================
-    EVENTOS DO SISTEMA
-============================= */
-btnOpen.onclick = () => {
-    modal.classList.add('active');
-    document.getElementById('task-title').focus();
-};
-
-btnClose.onclick = () => {
-    modal.classList.remove('active');
-};
-
-btnSave.onclick = () => {
-    const tInput = document.getElementById('task-title');
-    const dInput = document.getElementById('task-desc');
-
-    if (!tInput.value.trim()) {
-        alert("Digite um título para a tarefa!");
-        return;
-    }
-
-    const nova = {
-        id: "id_" + Date.now(),
-        titulo: tInput.value,
-        desc: dInput.value,
-        concluida: false
-    };
-
-    tarefas.push(nova);
-    tInput.value = '';
-    dInput.value = '';
-    modal.classList.remove('active');
-    renderizar();
-};
-
-// Inicia a página
-renderizar();
+// Listeners auxiliares
+DOM.openModalBtn.onclick = () => openModal();
+DOM.closeModalBtn.onclick = closeModal;

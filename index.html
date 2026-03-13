@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TaskPad - Kanban inteligente com prazos e subtarefas.">
-    <title>TaskPad • Kanban</title>
+    <title>TaskPad • To-Do</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,7 +12,7 @@
     <header class="main-header">
         <div class="header-container">
             <h1>📋 TaskPad</h1>
-            <button id="open-modal" class="btn-primary"><span>➕</span> Novo</button>
+            <button id="open-modal" class="btn-primary">➕ Novo</button>
         </div>
     </header>
 
@@ -21,43 +20,31 @@
         <section class="column">
             <div class="column-header">
                 <span class="status-badge todo"></span>
-                <h2>Pendentes</h2>
+                <h2>🟡 Pendentes</h2>
             </div>
             <ul id="todo-list" class="task-list" data-status="todo"></ul>
         </section>
 
         <section class="column">
             <div class="column-header">
-                <span class="status-badge doing"></span>
-                <h2>Em Execução</h2>
-            </div>
-            <ul id="doing-list" class="task-list" data-status="doing"></ul>
-        </section>
-
-        <section class="column">
-            <div class="column-header">
                 <span class="status-badge done"></span>
-                <h2>Concluídas</h2>
+                <h2>🟢 Concluídas</h2>
             </div>
             <ul id="done-list" class="task-list" data-status="done"></ul>
         </section>
     </main>
 
-    <div id="task-modal" class="modal-overlay" aria-hidden="true">
+    <div id="task-modal" class="modal-overlay">
         <div class="modal-card">
-            <h3 id="modal-title">Nova Tarefa</h3>
+            <h3>Nova Tarefa</h3>
             <form id="task-form">
                 <div class="form-group">
-                    <label for="task-title">Título</label>
+                    <label>Título</label>
                     <input type="text" id="task-title" placeholder="O que fazer?" required>
-                </div>
-                <div class="form-group">
-                    <label for="task-desc">Detalhes</label>
-                    <textarea id="task-desc" rows="2" placeholder="Descrição opcional..."></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="task-priority">Prioridade</label>
+                        <label>Prioridade</label>
                         <select id="task-priority">
                             <option value="low">Baixa</option>
                             <option value="medium" selected>Média</option>
@@ -65,7 +52,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="task-deadline">Prazo</label>
+                        <label>Prazo</label>
                         <input type="date" id="task-deadline">
                     </div>
                 </div>

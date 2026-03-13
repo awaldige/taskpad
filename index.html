@@ -1,58 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TaskPad Pro</title>
+<title>TaskPad Kanban</title>
 
 <link rel="stylesheet" href="style.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
 
-<div class="app">
-
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-<h2 class="logo">TaskPad</h2>
-
-<nav>
-
-<button class="menu-item active">
-📋 Tarefas
-</button>
-
-<button class="menu-item">
-📊 Dashboard
-</button>
-
-<button class="menu-item">
-⚙ Configurações
-</button>
-
-</nav>
-
-</aside>
-
-<!-- MAIN -->
-
-<main class="main">
-
 <header class="topbar">
 
-<input type="search" placeholder="Buscar tarefas">
+<h1>TaskPad</h1>
 
-<div class="top-actions">
+<div class="top-controls">
 
-<button id="theme-toggle">🌓</button>
+<select id="priority-filter">
+<option value="all">Todas prioridades</option>
+<option value="high">Alta</option>
+<option value="medium">Média</option>
+<option value="low">Baixa</option>
+</select>
 
 <button id="new-task">Nova tarefa</button>
 
@@ -60,32 +32,64 @@
 
 </header>
 
-<section class="board">
+<main class="board">
 
-<div class="column">
+<section class="column">
 
-<h3>Pendentes</h3>
+<h2>Pendentes</h2>
 
-<div id="todo-list"></div>
+<div id="todo" class="dropzone"></div>
 
-</div>
+</section>
 
-<div class="column">
+<section class="column">
 
-<h3>Concluídas</h3>
+<h2>Concluídas</h2>
 
-<div id="done-list"></div>
-
-</div>
+<div id="done" class="dropzone"></div>
 
 </section>
 
 </main>
+
+<!-- MODAL -->
+
+<div id="modal" class="modal">
+
+<div class="modal-card">
+
+<h3>Tarefa</h3>
+
+<input id="task-title" placeholder="Título">
+
+<select id="task-priority">
+
+<option value="low">Baixa</option>
+<option value="medium">Média</option>
+<option value="high">Alta</option>
+
+</select>
+
+<input type="date" id="task-deadline">
+
+<div id="subtasks"></div>
+
+<input id="new-subtask" placeholder="Nova subtarefa">
+
+<button id="add-sub">Adicionar subtarefa</button>
+
+<div class="modal-actions">
+
+<button id="save-task">Salvar</button>
+<button id="cancel-task">Cancelar</button>
+
+</div>
+
+</div>
 
 </div>
 
 <script src="script.js"></script>
 
 </body>
-
 </html>

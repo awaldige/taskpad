@@ -3,86 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TaskPad • Pro</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+    <title>TaskPad Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header class="main-header">
-        <div class="header-container">
-            <h1>📋 TaskPad</h1>
-            <div class="header-actions">
-                <button id="theme-toggle" class="btn-icon-theme" title="Alternar tema">🌓</button>
-                <div class="search-wrapper">
-                    <input type="search" id="search-input" placeholder="Buscar..." aria-label="Buscar">
-                </div>
-                <button id="open-modal" class="btn-primary"><span>➕</span> Novo</button>
+    <header class="app-header">
+        <div class="container">
+            <div class="logo-area">
+                <h1>TaskPad <span>Pro</span></h1>
+            </div>
+            <div class="actions-area">
+                <input type="search" id="search-input" placeholder="Pesquisar tarefas...">
+                <button id="theme-toggle" class="btn-icon">🌓</button>
+                <button id="open-modal" class="btn-add">Nova Tarefa</button>
             </div>
         </div>
     </header>
 
-    <main class="board">
-        <section class="column">
-            <div class="column-header">
-                <h2>🟡 Pendentes <span id="count-todo" class="count-pill">0</span></h2>
-            </div>
-            <ul id="todo-list" class="task-list"></ul>
-        </section>
+    <main class="app-container">
+        <div class="board-grid">
+            <section class="board-column">
+                <div class="column-title">
+                    <span class="dot yellow"></span>
+                    <h2>Pendentes</h2>
+                    <span id="count-todo" class="badge">0</span>
+                </div>
+                <ul id="todo-list" class="task-cards-list"></ul>
+            </section>
 
-        <section class="column">
-            <div class="column-header">
-                <h2>🟢 Concluídas <span id="count-done" class="count-pill">0</span></h2>
-            </div>
-            <ul id="done-list" class="task-list"></ul>
-        </section>
+            <section class="board-column">
+                <div class="column-title">
+                    <span class="dot green"></span>
+                    <h2>Concluídas</h2>
+                    <span id="count-done" class="badge">0</span>
+                </div>
+                <ul id="done-list" class="task-cards-list"></ul>
+            </section>
+        </div>
     </main>
 
     <div id="task-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-drag-handle"></div> <div class="modal-header">
-                <h3 id="modal-title">Tarefa</h3>
-                <button type="button" id="close-modal-x" class="btn-close-x">&times;</button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Detalhes da Tarefa</h3>
+                <button type="button" id="close-modal-x" class="close-x">&times;</button>
             </div>
             
-            <form id="task-form">
+            <form id="task-form" class="modern-form">
                 <input type="hidden" id="task-id">
-                <div class="form-group">
-                    <label for="task-title">Título</label>
-                    <input type="text" id="task-title" placeholder="O que precisa ser feito?" required>
+                
+                <div class="form-section">
+                    <label>O que deve ser feito?</label>
+                    <input type="text" id="task-title" placeholder="Nome da tarefa" required>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="task-priority">Prioridade</label>
+                    <div class="form-section">
+                        <label>Prioridade</label>
                         <select id="task-priority">
                             <option value="low">Baixa</option>
                             <option value="medium" selected>Média</option>
                             <option value="high">Alta</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="task-deadline">Prazo</label>
+                    <div class="form-section">
+                        <label>Vencimento</label>
                         <input type="date" id="task-deadline">
                     </div>
                 </div>
 
-                <div id="subtasks-edit-section" class="form-group">
-                    <div class="sub-header-row">
+                <div class="form-section subtasks-box">
+                    <div class="sub-header">
                         <label>Subtarefas</label>
-                        <button type="button" id="add-sub-field" class="btn-small-outline">+ Adicionar</button>
+                        <button type="button" id="add-sub-field" class="btn-text">+ Adicionar</button>
                     </div>
-                    <div id="subtasks-editor-list" class="sub-editor-container"></div>
+                    <div id="subtasks-editor-list"></div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar</button>
+                    <button type="button" id="close-modal" class="btn-outline">Cancelar</button>
+                    <button type="submit" class="btn-confirm">Salvar Tarefa</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,64 +1,267 @@
-let tasks = JSON.parse(localStorage.getItem("taskpad")) || [];
+let tasks = JSON.parse(localStorage.getItem("taskpad")) || []
+
+let editing = null
+let subtasksTemp = []
+
+const modal = document.getElementById("modal")
 
 function save(){
-localStorage.setItem("taskpad",JSON.stringify(tasks));
-render();
+
+localStorage.setItem("taskpad",JSON.stringify(tasks))
+
+render()
+
+}
+
+function progress(task){
+
+if(task.subtasks.length===0) return 0
+
+let done = task.subtasks.filter(s=>s.done).length
+
+return Math.round(done/task.subtasks.length*100)
+
 }
 
 function render(){
 
-const todo=document.getElementById("todo-list");
-const done=document.getElementById("done-list");
+const todo = document.getElementById("todo")
+const done = document.getElementById("done")
 
-todo.innerHTML="";
-done.innerHTML="";
+todo.innerHTML=""
+done.innerHTML=""
+
+const filter = document.getElementById("priority-filter").value
 
 tasks.forEach(task=>{
 
-const div=document.createElement("div");
+if(filter!="all" && task.priority!==filter) return
 
-div.className="card";
+const card = document.createElement("div")
 
-div.innerHTML=`
-<strong>${task.title}</strong>
-<br>
-<button onclick="toggle('${task.id}')">
-${task.status==="done"?"Refazer":"Concluir"}
-</button>
-`;
+card.className="card"
 
-(task.status==="todo"?todo:done).appendChild(div);
+card.draggable=true
 
-});
+card.dataset.id=task.id
+
+const prog = progress(task)
+
+let overdue=""
+
+if(task.deadline){
+
+let today=new Date().toISOString().split("T")[0]
+
+if(task.deadline < today && task.status=="todo")
+overdue="overdue"
 
 }
 
-function toggle(id){
+card.classList.add(overdue)
 
-const task=tasks.find(t=>t.id===id);
+card.innerHTML=`
 
-task.status=task.status==="todo"?"done":"todo";
+<strong>${task.title}</strong>
 
-save();
+<div>${task.priority}</div>
+
+${task.deadline?`<small>Prazo: ${task.deadline}</small>`:""}
+
+<div class="progress">
+<div class="progress-bar" style="width:${prog}%"></div>
+</div>
+
+<button onclick="editTask('${task.id}')">Editar</button>
+<button onclick="deleteTask('${task.id}')">Excluir</button>
+
+`
+
+card.addEventListener("dragstart",dragStart)
+
+;(task.status=="todo"?todo:done).appendChild(card)
+
+})
+
+checkTodayDeadlines()
+
+}
+
+function dragStart(e){
+
+e.dataTransfer.setData("id",e.target.dataset.id)
+
+}
+
+document.querySelectorAll(".dropzone").forEach(zone=>{
+
+zone.addEventListener("dragover",e=>e.preventDefault())
+
+zone.addEventListener("drop",e=>{
+
+const id=e.dataTransfer.getData("id")
+
+const task=tasks.find(t=>t.id==id)
+
+task.status = zone.id=="todo" ? "todo" : "done"
+
+save()
+
+})
+
+})
+
+function deleteTask(id){
+
+tasks = tasks.filter(t=>t.id!=id)
+
+save()
+
+}
+
+function editTask(id){
+
+const task=tasks.find(t=>t.id==id)
+
+editing=id
+
+document.getElementById("task-title").value=task.title
+document.getElementById("task-priority").value=task.priority
+document.getElementById("task-deadline").value=task.deadline
+
+subtasksTemp=[...task.subtasks]
+
+renderSubtasks()
+
+modal.style.display="flex"
+
+}
+
+function renderSubtasks(){
+
+const list=document.getElementById("subtasks")
+
+list.innerHTML=""
+
+subtasksTemp.forEach((s,i)=>{
+
+const div=document.createElement("div")
+
+div.innerHTML=`
+<input type="checkbox" ${s.done?"checked":""}
+onclick="toggleSub(${i})">
+
+${s.text}
+
+<button onclick="removeSub(${i})">x</button>
+`
+
+list.appendChild(div)
+
+})
+
+}
+
+function toggleSub(i){
+
+subtasksTemp[i].done=!subtasksTemp[i].done
+
+renderSubtasks()
+
+}
+
+function removeSub(i){
+
+subtasksTemp.splice(i,1)
+
+renderSubtasks()
+
+}
+
+document.getElementById("add-sub").onclick=()=>{
+
+const text=document.getElementById("new-subtask").value
+
+if(!text) return
+
+subtasksTemp.push({text,done:false})
+
+document.getElementById("new-subtask").value=""
+
+renderSubtasks()
 
 }
 
 document.getElementById("new-task").onclick=()=>{
 
-const title=prompt("Nova tarefa");
+editing=null
 
-if(!title) return;
+subtasksTemp=[]
 
-tasks.push({
+document.getElementById("task-title").value=""
+document.getElementById("task-deadline").value=""
 
-id:Date.now().toString(),
-title,
-status:"todo"
+renderSubtasks()
 
-});
-
-save();
+modal.style.display="flex"
 
 }
 
-render();
+document.getElementById("save-task").onclick=()=>{
+
+const data={
+title:document.getElementById("task-title").value,
+priority:document.getElementById("task-priority").value,
+deadline:document.getElementById("task-deadline").value
+}
+
+if(editing){
+
+const task=tasks.find(t=>t.id==editing)
+
+Object.assign(task,data)
+
+task.subtasks=subtasksTemp
+
+}else{
+
+tasks.push({
+
+...data,
+id:Date.now(),
+status:"todo",
+subtasks:subtasksTemp
+
+})
+
+}
+
+modal.style.display="none"
+
+save()
+
+}
+
+document.getElementById("cancel-task").onclick=()=>{
+modal.style.display="none"
+}
+
+document.getElementById("priority-filter").onchange=render
+
+function checkTodayDeadlines(){
+
+let today=new Date().toISOString().split("T")[0]
+
+tasks.forEach(t=>{
+
+if(t.deadline==today && t.status=="todo"){
+
+console.log("Tarefa vence hoje:",t.title)
+
+}
+
+})
+
+}
+
+render()

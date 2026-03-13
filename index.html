@@ -1,95 +1,94 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>TaskPad Kanban</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskPad Kanban - Gestão de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
 <body>
 
-<header class="topbar">
+    <header class="topbar">
+        <h1>TaskPad</h1>
+        
+        <div class="top-controls">
+            <div class="filter-group">
+                <label for="priority-filter">Filtrar:</label>
+                <select id="priority-filter">
+                    <option value="all">Todas as prioridades</option>
+                    <option value="high">Alta</option>
+                    <option value="medium">Média</option>
+                    <option value="low">Baixa</option>
+                </select>
+            </div>
+            
+            <button id="new-task" class="btn-primary">+ Nova tarefa</button>
+        </div>
+    </header>
 
-<h1>TaskPad</h1>
+    <main class="board">
+        <section class="column" aria-labelledby="todo-title">
+            <h2 id="todo-title">Pendentes</h2>
+            <div id="todo" class="dropzone" data-status="todo"></div>
+        </section>
 
-<div class="top-controls">
+        <section class="column" aria-labelledby="doing-title">
+            <h2 id="doing-title">Em curso</h2>
+            <div id="doing" class="dropzone" data-status="doing"></div>
+        </section>
 
-<select id="priority-filter">
-<option value="all">Todas prioridades</option>
-<option value="high">Alta</option>
-<option value="medium">Média</option>
-<option value="low">Baixa</option>
-</select>
+        <section class="column" aria-labelledby="done-title">
+            <h2 id="done-title">Concluídas</h2>
+            <div id="done" class="dropzone" data-status="done"></div>
+        </section>
+    </main>
 
-<button id="new-task">Nova tarefa</button>
+    <div id="modal" class="modal" aria-hidden="true" role="dialog">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h3>Detalhes da Tarefa</h3>
+                <button id="close-modal-x" class="close-btn" aria-label="Fechar">&times;</button>
+            </header>
 
-</div>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Título da Tarefa</label>
+                    <input type="text" id="task-title" placeholder="O que precisa de fazer?" required>
+                </div>
 
-</header>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Prioridade</label>
+                        <select id="task-priority">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
 
-<main class="board">
+                    <div class="form-group">
+                        <label for="task-deadline">Prazo</label>
+                        <input type="date" id="task-deadline">
+                    </div>
+                </div>
 
-<section class="column">
+                <div class="subtasks-section">
+                    <label>Subtarefas</label>
+                    <div id="subtasks-list"></div>
+                    <div class="subtask-input-group">
+                        <input type="text" id="new-subtask" placeholder="Adicionar passo...">
+                        <button type="button" id="add-sub" class="btn-secondary">Adicionar</button>
+                    </div>
+                </div>
 
-<h2>Pendentes</h2>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-task" class="btn-text">Cancelar</button>
+                    <button type="submit" id="save-task" class="btn-success">Guardar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<div id="todo" class="dropzone"></div>
-
-</section>
-
-<section class="column">
-
-<h2>Concluídas</h2>
-
-<div id="done" class="dropzone"></div>
-
-</section>
-
-</main>
-
-<!-- MODAL -->
-
-<div id="modal" class="modal">
-
-<div class="modal-card">
-
-<h3>Tarefa</h3>
-
-<input id="task-title" placeholder="Título">
-
-<select id="task-priority">
-
-<option value="low">Baixa</option>
-<option value="medium">Média</option>
-<option value="high">Alta</option>
-
-</select>
-
-<input type="date" id="task-deadline">
-
-<div id="subtasks"></div>
-
-<input id="new-subtask" placeholder="Nova subtarefa">
-
-<button id="add-sub">Adicionar subtarefa</button>
-
-<div class="modal-actions">
-
-<button id="save-task">Salvar</button>
-<button id="cancel-task">Cancelar</button>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>

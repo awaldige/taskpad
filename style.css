@@ -201,3 +201,45 @@ input:focus, textarea:focus {
     .board { grid-template-columns: 1fr; }
     .column { min-height: auto; }
 }
+/* Barra de Progresso */
+.progress-container {
+    height: 6px;
+    background: #edf2f7;
+    border-radius: 3px;
+    margin: 10px 0 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--done);
+    transition: width 0.3s ease;
+}
+
+/* Subtarefas */
+.subtask-list {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    list-style: none;
+}
+
+.subtask-list li {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.subtask-list li.done {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.subtask-list li:hover {
+    background: #f7fafc;
+}
+
+/* Drag & Drop Visual */
+.drag-over {
+    background: #cbd5e0 !important;
+    border: 2px dashed #a0aec0;
+}

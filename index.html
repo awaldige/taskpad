@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskPad • To-Do</title>
+    <title>TaskPad Pro • 2026</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,23 +12,24 @@
     <header class="main-header">
         <div class="header-container">
             <h1>📋 TaskPad</h1>
-            <button id="open-modal" class="btn-primary">➕ Novo</button>
+            <div class="header-actions">
+                <input type="text" id="search-input" placeholder="Buscar tarefas..." aria-label="Buscar">
+                <button id="open-modal" class="btn-primary">➕ Novo</button>
+            </div>
         </div>
     </header>
 
     <main class="board">
         <section class="column">
             <div class="column-header">
-                <span class="status-badge todo"></span>
-                <h2>🟡 Pendentes</h2>
+                <h2>🟡 Pendentes <span id="count-todo" class="count-pill">0</span></h2>
             </div>
             <ul id="todo-list" class="task-list" data-status="todo"></ul>
         </section>
 
         <section class="column">
             <div class="column-header">
-                <span class="status-badge done"></span>
-                <h2>🟢 Concluídas</h2>
+                <h2>🟢 Concluídas <span id="count-done" class="count-pill">0</span></h2>
             </div>
             <ul id="done-list" class="task-list" data-status="done"></ul>
         </section>
@@ -36,11 +37,12 @@
 
     <div id="task-modal" class="modal-overlay">
         <div class="modal-card">
-            <h3>Nova Tarefa</h3>
+            <h3 id="modal-title">Nova Tarefa</h3>
             <form id="task-form">
+                <input type="hidden" id="task-id">
                 <div class="form-group">
                     <label>Título</label>
-                    <input type="text" id="task-title" placeholder="O que fazer?" required>
+                    <input type="text" id="task-title" placeholder="Ex: Estudar React" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

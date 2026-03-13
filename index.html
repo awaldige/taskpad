@@ -10,140 +10,82 @@
 
 <link rel="stylesheet" href="style.css">
 
-<link rel="icon"
-href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'
-viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
 
-<header class="main-header">
+<div class="app">
 
-<div class="header-container">
+<!-- SIDEBAR -->
 
-<h1>📋 TaskPad</h1>
+<aside class="sidebar">
 
-<div class="header-actions">
+<h2 class="logo">TaskPad</h2>
 
-<input type="search" id="search-input" placeholder="Buscar tarefas">
+<nav>
+
+<button class="menu-item active">
+📋 Tarefas
+</button>
+
+<button class="menu-item">
+📊 Dashboard
+</button>
+
+<button class="menu-item">
+⚙ Configurações
+</button>
+
+</nav>
+
+</aside>
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+
+<input type="search" placeholder="Buscar tarefas">
+
+<div class="top-actions">
 
 <button id="theme-toggle">🌓</button>
 
-<button id="open-modal" class="btn-primary">Nova tarefa</button>
-
-</div>
+<button id="new-task">Nova tarefa</button>
 
 </div>
 
 </header>
 
-<main class="board">
+<section class="board">
 
-<section class="column">
+<div class="column">
 
-<div class="column-header">
-<h2>Pendentes <span id="count-todo">0</span></h2>
+<h3>Pendentes</h3>
+
+<div id="todo-list"></div>
+
 </div>
 
-<ul id="todo-list" class="task-list"></ul>
+<div class="column">
 
-</section>
+<h3>Concluídas</h3>
 
-<section class="column">
+<div id="done-list"></div>
 
-<div class="column-header">
-<h2>Concluídas <span id="count-done">0</span></h2>
 </div>
-
-<ul id="done-list" class="task-list"></ul>
 
 </section>
 
 </main>
-
-<!-- MODAL -->
-
-<div id="task-modal" class="modal-overlay">
-
-<div class="modal-card">
-
-<div class="modal-header">
-<h3>Nova tarefa</h3>
-<button id="close-modal-x">✖</button>
-</div>
-
-<form id="task-form">
-
-<input type="hidden" id="task-id">
-
-<div class="form-group">
-
-<label>Título</label>
-
-<input type="text" id="task-title" required>
-
-</div>
-
-<div class="form-row">
-
-<div class="form-group">
-
-<label>Prioridade</label>
-
-<select id="task-priority">
-
-<option value="low">Baixa</option>
-<option value="medium">Média</option>
-<option value="high">Alta</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>Prazo</label>
-
-<input type="date" id="task-deadline">
-
-</div>
-
-</div>
-
-<!-- SUBTAREFAS -->
-
-<div class="form-group">
-
-<label>Subtarefas</label>
-
-<div id="subtasks-list"></div>
-
-<div class="sub-add">
-
-<input type="text" id="new-subtask" placeholder="Nova subtarefa">
-
-<button type="button" id="add-subtask">Adicionar</button>
-
-</div>
-
-</div>
-
-<div class="modal-footer">
-
-<button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
-
-<button type="submit" class="btn-save">Salvar</button>
-
-</div>
-
-</form>
-
-</div>
 
 </div>
 
 <script src="script.js"></script>
 
 </body>
+
 </html>

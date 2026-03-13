@@ -1,205 +1,147 @@
-// --- ESTADO DA APLICAÇÃO ---
-let tasks = JSON.parse(localStorage.getItem('taskpad_data')) || [];
+let tasks = JSON.parse(localStorage.getItem('taskpad_db')) || [];
 
 const DOM = {
-    modal: document.getElementById('task-modal'),
     form: document.getElementById('task-form'),
-    taskTitle: document.getElementById('task-title'),
-    taskDesc: document.getElementById('task-desc'),
-    columns: {
-        todo: document.getElementById('todo-list'),
-        doing: document.getElementById('doing-list'),
-        done: document.getElementById('done-list')
-    },
-    openModalBtn: document.getElementById('open-modal'),
-    closeModalBtn: document.getElementById('close-modal')
+    modal: document.getElementById('task-modal'),
+    lists: document.querySelectorAll('.task-list'),
+    inputs: {
+        title: document.getElementById('task-title'),
+        desc: document.getElementById('task-desc'),
+        priority: document.getElementById('task-priority'),
+        deadline: document.getElementById('task-deadline')
+    }
 };
 
-// --- INICIALIZAÇÃO ---
-document.addEventListener('DOMContentLoaded', () => {
-    renderTasks();
-    setupDragAndDrop();
-    checkDeadlines();
-});
-
-// --- GERENCIAMENTO DE TAREFAS ---
-
-function openModal(editId = null) {
-    DOM.modal.classList.add('active');
-    DOM.modal.setAttribute('aria-hidden', 'false');
-    
-    if (editId) {
-        const task = tasks.find(t => t.id === editId);
-        DOM.taskTitle.value = task.title;
-        DOM.taskDesc.value = task.desc;
-        DOM.form.dataset.editId = editId;
-        document.getElementById('modal-title').innerText = "Editar Tarefa";
-    } else {
-        DOM.form.reset();
-        delete DOM.form.dataset.editId;
-        document.getElementById('modal-title').innerText = "Nova Tarefa";
-    }
+function saveAndRender() {
+    localStorage.setItem('taskpad_db', JSON.stringify(tasks));
+    render();
 }
 
-function closeModal() {
-    DOM.modal.classList.remove('active');
-    DOM.modal.setAttribute('aria-hidden', 'true');
+function render() {
+    DOM.lists.forEach(list => list.innerHTML = '');
+
+    tasks.forEach(task => {
+        const isOverdue = task.deadline && new Date(task.deadline) < new Date().setHours(0,0,0,0) && task.status !== 'done';
+        const progress = calculateProgress(task.subtasks);
+        
+        const card = document.createElement('li');
+        card.className = `card ${isOverdue ? 'overdue' : ''}`;
+        card.draggable = true;
+        card.style.borderLeftColor = `var(--${task.priority})`;
+
+        card.innerHTML = `
+            <div onclick="editTask('${task.id}')">
+                <div class="card-header">
+                    <strong>${task.title}</strong>
+                    ${isOverdue ? '<span class="badge-atraso">Atrasado</span>' : ''}
+                </div>
+                <p style="font-size: 0.85rem; color: #4a5568">${task.desc}</p>
+                ${task.deadline ? `<small class="date-tag">📅 ${formatDate(task.deadline)}</small>` : ''}
+                <div class="progress-container"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            </div>
+            <div class="sub-area">
+                ${task.subtasks.map(s => `
+                    <div class="sub-item ${s.done ? 'checked' : ''}" onclick="toggleSub('${task.id}', ${s.id})">
+                        ${s.done ? '✅' : '⬜'} ${s.text}
+                    </div>
+                `).join('')}
+                <button class="btn-add-sub" onclick="addSub('${task.id}')">+ Subtarefa</button>
+            </div>
+            <div style="text-align: right; margin-top: 10px;">
+                <button onclick="deleteTask('${task.id}')" style="background:none; border:none; cursor:pointer">🗑️</button>
+            </div>
+        `;
+
+        card.addEventListener('dragstart', () => {
+            card.classList.add('dragging');
+            card.dataset.id = task.id;
+        });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+        document.querySelector(`[data-status="${task.status}"]`).appendChild(card);
+    });
 }
 
-DOM.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const editId = DOM.form.dataset.editId;
-    
-    const taskData = {
-        id: editId || Date.now().toString(),
-        title: DOM.taskTitle.value,
-        desc: DOM.taskDesc.value,
-        status: editId ? tasks.find(t => t.id === editId).status : 'todo',
-        subtasks: editId ? tasks.find(t => t.id === editId).subtasks : [],
-        priority: 'media', // Pode ser expandido para um select
-        createdAt: new Date().toISOString()
-    };
+// --- Funções de Lógica ---
+function calculateProgress(subs) {
+    if (!subs.length) return 0;
+    return Math.round((subs.filter(s => s.done).length / subs.length) * 100);
+}
 
-    if (editId) {
-        tasks = tasks.map(t => t.id === editId ? taskData : t);
-    } else {
-        tasks.push(taskData);
-    }
-
+function addSub(taskId) {
+    const text = prompt("Descrição da subtarefa:");
+    if (!text) return;
+    tasks.find(t => t.id === taskId).subtasks.push({ id: Date.now(), text, done: false });
     saveAndRender();
-    closeModal();
-});
+}
+
+function toggleSub(taskId, subId) {
+    const sub = tasks.find(t => t.id === taskId).subtasks.find(s => s.id === subId);
+    sub.done = !sub.done;
+    saveAndRender();
+}
 
 function deleteTask(id) {
-    if(confirm('Deseja excluir esta tarefa?')) {
+    if (confirm("Excluir tarefa?")) {
         tasks = tasks.filter(t => t.id !== id);
         saveAndRender();
     }
 }
 
-// --- SUBTAREFAS E PROGRESSO ---
-
-function addSubtask(taskId) {
-    const text = prompt("Nome da subtarefa:");
-    if (!text) return;
-    
-    tasks = tasks.map(t => {
-        if (t.id === taskId) {
-            t.subtasks.push({ id: Date.now(), text, completed: false });
-        }
-        return t;
+// --- Drag & Drop ---
+DOM.lists.forEach(list => {
+    list.addEventListener('dragover', e => {
+        e.preventDefault();
+        const dragging = document.querySelector('.dragging');
+        list.appendChild(dragging);
     });
+
+    list.addEventListener('drop', () => {
+        const id = document.querySelector('.dragging').dataset.id;
+        tasks = tasks.map(t => t.id === id ? {...t, status: list.dataset.status} : t);
+        saveAndRender();
+    });
+});
+
+// --- Modal ---
+DOM.form.onsubmit = (e) => {
+    e.preventDefault();
+    const id = DOM.form.dataset.editId || Date.now().toString();
+    const taskData = {
+        id,
+        title: DOM.inputs.title.value,
+        desc: DOM.inputs.desc.value,
+        priority: DOM.inputs.priority.value,
+        deadline: DOM.inputs.deadline.value,
+        status: DOM.form.dataset.editStatus || 'todo',
+        subtasks: DOM.form.dataset.editId ? tasks.find(t => t.id === id).subtasks : []
+    };
+
+    if (DOM.form.dataset.editId) tasks = tasks.map(t => t.id === id ? taskData : t);
+    else tasks.push(taskData);
+
+    closeModal();
     saveAndRender();
+};
+
+function editTask(id) {
+    const task = tasks.find(t => t.id === id);
+    DOM.inputs.title.value = task.title;
+    DOM.inputs.desc.value = task.desc;
+    DOM.inputs.priority.value = task.priority;
+    DOM.inputs.deadline.value = task.deadline;
+    DOM.form.dataset.editId = id;
+    DOM.form.dataset.editStatus = task.status;
+    document.getElementById('modal-title').innerText = "Editar Tarefa";
+    DOM.modal.classList.add('active');
 }
 
-function toggleSubtask(taskId, subId) {
-    tasks = tasks.map(t => {
-        if (t.id === taskId) {
-            t.subtasks = t.subtasks.map(s => s.id === subId ? {...s, completed: !s.completed} : s);
-        }
-        return t;
-    });
-    saveAndRender();
-}
+function openModal() { DOM.modal.classList.add('active'); document.getElementById('modal-title').innerText = "Nova Tarefa"; }
+function closeModal() { DOM.modal.classList.remove('active'); DOM.form.reset(); delete DOM.form.dataset.editId; }
 
-function calculateProgress(subtasks) {
-    if (subtasks.length === 0) return 0;
-    const done = subtasks.filter(s => s.completed).length;
-    return Math.round((done / subtasks.length) * 100);
-}
+function formatDate(d) { return d.split('-').reverse().join('/'); }
 
-// --- DRAG & DROP ---
+document.getElementById('open-modal').onclick = openModal;
+document.getElementById('close-modal').onclick = closeModal;
 
-function setupDragAndDrop() {
-    const lists = document.querySelectorAll('.task-list');
-    
-    lists.forEach(list => {
-        list.addEventListener('dragover', e => {
-            e.preventDefault();
-            list.classList.add('drag-over');
-        });
-
-        list.addEventListener('dragleave', () => list.classList.remove('drag-over'));
-
-        list.addEventListener('drop', e => {
-            const id = e.dataTransfer.getData('text/plain');
-            const newStatus = list.dataset.status;
-            
-            tasks = tasks.map(t => t.id === id ? {...t, status: newStatus} : t);
-            list.classList.remove('drag-over');
-            saveAndRender();
-        });
-    });
-}
-
-// --- RENDERIZAÇÃO ---
-
-function renderTasks() {
-    // Limpar listas
-    Object.values(DOM.columns).forEach(col => col.innerHTML = '');
-
-    tasks.forEach(task => {
-        const progress = calculateProgress(task.subtasks);
-        
-        const card = document.createElement('li');
-        card.className = 'card';
-        card.draggable = true;
-        card.innerHTML = `
-            <div onclick="openModal('${task.id}')">
-                <strong>${task.title}</strong>
-                <p>${task.desc}</p>
-                
-                ${task.subtasks.length > 0 ? `
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${progress}%"></div>
-                    </div>
-                    <small>${progress}% concluído</small>
-                ` : ''}
-            </div>
-
-            <ul class="subtask-list">
-                ${task.subtasks.map(s => `
-                    <li class="${s.completed ? 'done' : ''}" onclick="toggleSubtask('${task.id}', ${s.id})">
-                        ${s.completed ? '✅' : '⬜'} ${s.text}
-                    </li>
-                `).join('')}
-            </ul>
-
-            <div class="card-actions">
-                <button class="btn-act" onclick="addSubtask('${task.id}')" title="Add Subtarefa">➕</button>
-                <button class="btn-act" onclick="deleteTask('${task.id}')" title="Excluir">🗑️</button>
-            </div>
-        `;
-
-        card.addEventListener('dragstart', e => {
-            e.dataTransfer.setData('text/plain', task.id);
-            card.style.opacity = '0.5';
-        });
-
-        card.addEventListener('dragend', () => card.style.opacity = '1');
-
-        DOM.columns[task.status].appendChild(card);
-    });
-}
-
-function saveAndRender() {
-    localStorage.setItem('taskpad_data', JSON.stringify(tasks));
-    renderTasks();
-}
-
-// --- NOTIFICAÇÕES E PRAZOS ---
-function checkDeadlines() {
-    // Exemplo simplificado: Notifica se houver tarefas "todo" ao abrir
-    const pending = tasks.filter(t => t.status === 'todo').length;
-    if (pending > 0 && "Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                new Notification("TaskPad", { body: `Você tem ${pending} tarefas pendentes para hoje!` });
-            }
-        });
-    }
-}
-
-// Listeners auxiliares
-DOM.openModalBtn.onclick = () => openModal();
-DOM.closeModalBtn.onclick = closeModal;
+render();

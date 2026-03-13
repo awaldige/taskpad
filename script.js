@@ -1,32 +1,23 @@
-let tasks = JSON.parse(localStorage.getItem("taskpad_pro")) || [];
+let tasks = JSON.parse(localStorage.getItem("taskpad")) || [];
 
-let searchTerm="";
+let tempSubtasks=[];
 
 const modal = document.getElementById("task-modal");
 
 const taskForm = document.getElementById("task-form");
 
-const subSection = document.getElementById("subtasks-edit-section");
-
-const subEditorList = document.getElementById("subtasks-editor-list");
-
-/* TEMA */
+/* THEME */
 
 const themeToggle = document.getElementById("theme-toggle");
 
-const savedTheme = localStorage.getItem("theme") || "light";
-
-document.body.setAttribute("data-theme", savedTheme);
-
 themeToggle.onclick=()=>{
 
-const newTheme =
-document.body.getAttribute("data-theme")==="dark"
-?"light":"dark";
+const current=document.body.getAttribute("data-theme");
 
-document.body.setAttribute("data-theme",newTheme);
-
-localStorage.setItem("theme",newTheme);
+document.body.setAttribute(
+"data-theme",
+current==="dark"?"light":"dark"
+);
 
 };
 
@@ -34,21 +25,62 @@ localStorage.setItem("theme",newTheme);
 
 function save(){
 
-localStorage.setItem("taskpad_pro",JSON.stringify(tasks));
+localStorage.setItem("taskpad",JSON.stringify(tasks));
 
 render();
 
 }
 
-/* PROGRESSO */
+/* SUBTAREFAS FORM */
 
-function calculateProgress(subs){
+function renderSubtasksForm(){
 
-if(!subs.length) return 0;
+const list=document.getElementById("subtasks-list");
 
-return Math.round(
-subs.filter(s=>s.done).length / subs.length * 100
-);
+list.innerHTML="";
+
+tempSubtasks.forEach((sub,i)=>{
+
+const div=document.createElement("div");
+
+div.className="subtask-item";
+
+div.innerHTML=`
+<span>${sub.text}</span>
+<button onclick="removeTempSub(${i})">❌</button>
+`;
+
+list.appendChild(div);
+
+});
+
+}
+
+document.getElementById("add-subtask").onclick=()=>{
+
+const input=document.getElementById("new-subtask");
+
+const text=input.value.trim();
+
+if(!text) return;
+
+tempSubtasks.push({
+id:Date.now(),
+text,
+done:false
+});
+
+input.value="";
+
+renderSubtasksForm();
+
+};
+
+function removeTempSub(i){
+
+tempSubtasks.splice(i,1);
+
+renderSubtasksForm();
 
 }
 
@@ -56,58 +88,28 @@ subs.filter(s=>s.done).length / subs.length * 100
 
 function render(){
 
-const todoList = document.getElementById("todo-list");
+const todo=document.getElementById("todo-list");
 
-const doneList = document.getElementById("done-list");
+const done=document.getElementById("done-list");
 
-todoList.innerHTML="";
-doneList.innerHTML="";
+todo.innerHTML="";
+done.innerHTML="";
 
-let filtered = tasks.filter(t=>
-t.title.toLowerCase().includes(searchTerm.toLowerCase())
-);
+tasks.forEach(task=>{
 
-const order = {high:1,medium:2,low:3};
+const li=document.createElement("li");
 
-filtered.sort((a,b)=> order[a.priority]-order[b.priority]);
+li.className="card";
 
-if(filtered.length===0){
+li.style.borderColor=`var(--${task.priority})`;
 
-todoList.innerHTML="<p>Nenhuma tarefa</p>";
+li.innerHTML=`
 
-}
-
-filtered.forEach(task=>{
-
-const progress = calculateProgress(task.subtasks);
-
-const card = document.createElement("li");
-
-card.className="card";
-
-card.style.borderLeftColor=`var(--${task.priority})`;
-
-card.innerHTML=`
-
-<div onclick="editTask('${task.id}')">
-
-<strong>${task.title}</strong>
-
-<div style="font-size:.7rem;color:var(--text-gray)">
-${progress}% concluído
-</div>
-
-<div class="progress-container">
-<div class="progress-bar" style="width:${progress}%"></div>
-</div>
-
-</div>
-
-<div>
+<h3>${task.title}</h3>
 
 ${task.subtasks.map(s=>
 
-`<div class="sub-item ${s.done?"checked":""}"
+`<div class="sub-item ${s.done?"done":""}"
 onclick="toggleSub('${task.id}',${s.id})">
 
 ${s.done?"✅":"⬜"} ${s.text}
@@ -115,12 +117,6 @@ ${s.done?"✅":"⬜"} ${s.text}
 </div>`
 
 ).join("")}
-
-<button onclick="addSubDirect('${task.id}')">
-+ subtarefa
-</button>
-
-</div>
 
 <div class="card-actions">
 
@@ -134,9 +130,7 @@ onclick="deleteTask('${task.id}')">🗑</button>
 
 </div>
 
-<button class="btn-check
-${task.status==="done"?"undo":""}"
-
+<button class="btn-check"
 onclick="toggleStatus('${task.id}')">
 
 ${task.status==="done"?"Refazer":"Concluir"}
@@ -147,50 +141,45 @@ ${task.status==="done"?"Refazer":"Concluir"}
 
 `;
 
-(task.status==="todo"?todoList:doneList)
-.appendChild(card);
+(task.status==="todo"?todo:done).appendChild(li);
 
 });
 
-document.getElementById("count-todo").innerText =
+document.getElementById("count-todo").innerText=
 tasks.filter(t=>t.status==="todo").length;
 
-document.getElementById("count-done").innerText =
+document.getElementById("count-done").innerText=
 tasks.filter(t=>t.status==="done").length;
 
 }
 
-/* STATUS */
+/* CRUD */
 
 function toggleStatus(id){
 
-const task = tasks.find(t=>t.id===id);
+const task=tasks.find(t=>t.id===id);
 
-task.status = task.status==="todo"?"done":"todo";
+task.status=task.status==="todo"?"done":"todo";
 
 save();
 
 }
-
-/* DELETE */
 
 function deleteTask(id){
 
 if(!confirm("Excluir tarefa?")) return;
 
-tasks = tasks.filter(t=>t.id!==id);
+tasks=tasks.filter(t=>t.id!==id);
 
 save();
 
 }
 
-/* SUBTAREFAS */
-
 function toggleSub(taskId,subId){
 
-const task = tasks.find(t=>t.id===taskId);
+const task=tasks.find(t=>t.id===taskId);
 
-const sub = task.subtasks.find(s=>s.id===subId);
+const sub=task.subtasks.find(s=>s.id===subId);
 
 sub.done=!sub.done;
 
@@ -198,91 +187,25 @@ save();
 
 }
 
-function addSubDirect(taskId){
-
-const text = prompt("Nome da subtarefa");
-
-if(!text) return;
-
-tasks.find(t=>t.id===taskId)
-.subtasks.push({
-id:Date.now(),
-text,
-done:false
-});
-
-save();
-
-}
-
-/* EDITAR */
+/* EDIT */
 
 function editTask(id){
 
-const task = tasks.find(t=>t.id===id);
+const task=tasks.find(t=>t.id===id);
 
-document.getElementById("task-id").value = task.id;
+document.getElementById("task-id").value=task.id;
 
-document.getElementById("task-title").value = task.title;
+document.getElementById("task-title").value=task.title;
 
-document.getElementById("task-priority").value = task.priority;
+document.getElementById("task-priority").value=task.priority;
 
-document.getElementById("task-deadline").value = task.deadline||"";
+document.getElementById("task-deadline").value=task.deadline||"";
 
-subSection.style.display="block";
+tempSubtasks=[...task.subtasks];
 
-renderSubEditor(task);
+renderSubtasksForm();
 
 modal.classList.add("active");
-
-}
-
-function renderSubEditor(task){
-
-subEditorList.innerHTML="";
-
-task.subtasks.forEach(sub=>{
-
-const row = document.createElement("div");
-
-row.className="sub-edit-row";
-
-row.innerHTML=`
-
-<input value="${sub.text}"
-onchange="updateSubText('${task.id}',${sub.id},this.value)">
-
-<button onclick="removeSub('${task.id}',${sub.id})">❌</button>
-
-`;
-
-subEditorList.appendChild(row);
-
-});
-
-}
-
-function updateSubText(taskId,subId,text){
-
-const task = tasks.find(t=>t.id===taskId);
-
-const sub = task.subtasks.find(s=>s.id===subId);
-
-sub.text=text;
-
-save();
-
-}
-
-function removeSub(taskId,subId){
-
-const task = tasks.find(t=>t.id===taskId);
-
-task.subtasks = task.subtasks.filter(s=>s.id!==subId);
-
-renderSubEditor(task);
-
-save();
 
 }
 
@@ -294,7 +217,9 @@ taskForm.reset();
 
 document.getElementById("task-id").value="";
 
-subSection.style.display="none";
+tempSubtasks=[];
+
+renderSubtasksForm();
 
 modal.classList.add("active");
 
@@ -310,23 +235,21 @@ taskForm.onsubmit=e=>{
 
 e.preventDefault();
 
-const id = document.getElementById("task-id").value;
+const id=document.getElementById("task-id").value;
 
 const data={
-
 title:document.getElementById("task-title").value,
-
 priority:document.getElementById("task-priority").value,
-
 deadline:document.getElementById("task-deadline").value
-
 };
 
 if(id){
 
-const task = tasks.find(t=>t.id===id);
+const task=tasks.find(t=>t.id===id);
 
 Object.assign(task,data);
+
+task.subtasks=[...tempSubtasks];
 
 }else{
 
@@ -334,39 +257,17 @@ tasks.push({
 ...data,
 id:Date.now().toString(),
 status:"todo",
-subtasks:[]
+subtasks:[...tempSubtasks]
 });
 
 }
 
 modal.classList.remove("active");
 
+tempSubtasks=[];
+
 save();
 
 };
-
-/* BUSCA */
-
-document.getElementById("search-input").oninput=e=>{
-
-searchTerm=e.target.value;
-
-render();
-
-};
-
-/* ATALHO */
-
-document.addEventListener("keydown",e=>{
-
-if(e.key==="n" && !modal.classList.contains("active")){
-
-taskForm.reset();
-
-modal.classList.add("active");
-
-}
-
-});
 
 render();

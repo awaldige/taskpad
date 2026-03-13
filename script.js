@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Estado da Aplicação
     let tasks = JSON.parse(localStorage.getItem('taskpad_pro_final')) || [];
     let searchTerm = "";
+    let tempSubtasks = []; // Array temporário para o Modal
 
     // 2. Seleção de Elementos
     const modal = document.getElementById('task-modal');
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('count-done').innerText = tasks.filter(t => t.status === 'done').length;
     };
 
-    // 5. Renderização dos Cards
+    // 5. Renderização dos Cards (Visualização Principal)
     function render() {
         const todoList = document.getElementById('todo-list');
         const doneList = document.getElementById('done-list');
@@ -86,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Atribuição de Eventos aos botões do Card
             card.querySelector('.card-clickable').onclick = () => editTask(task.id);
             card.querySelector('.btn-edit-task').onclick = () => editTask(task.id);
             card.querySelector('.btn-delete-task').onclick = () => {
@@ -114,7 +114,41 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCounters();
     }
 
-    // 6. Modal e Edição
+    // 6. Funções do Modal (Editor de Subtarefas)
+    function renderSubEditor() {
+        subEditorList.innerHTML = '';
+        tempSubtasks.forEach((sub, index) => {
+            const div = document.createElement('div');
+            div.className = 'sub-edit-row';
+            div.innerHTML = `
+                <input type="text" value="${sub.text}" class="input-sub-edit" placeholder="Nome da subtarefa...">
+                <button type="button" class="btn-sub-del">❌</button>
+            `;
+            
+            // Atualiza texto no array temporário
+            div.querySelector('.input-sub-edit').onchange = (e) => {
+                tempSubtasks[index].text = e.target.value;
+            };
+            
+            // Remove do array temporário
+            div.querySelector('.btn-sub-del').onclick = () => {
+                tempSubtasks.splice(index, 1);
+                renderSubEditor();
+            };
+            subEditorList.appendChild(div);
+        });
+    }
+
+    // Função para adicionar novo campo de subtarefa no modal
+    // Certifique-se de ter um botão com id="add-sub-field" no HTML (dentro do modal)
+    const addSubFieldBtn = document.getElementById('add-sub-field');
+    if (addSubFieldBtn) {
+        addSubFieldBtn.onclick = () => {
+            tempSubtasks.push({ id: Date.now(), text: "", done: false });
+            renderSubEditor();
+        };
+    }
+
     function editTask(id) {
         const task = tasks.find(t => t.id === id);
         if(!task) return;
@@ -124,44 +158,38 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('task-priority').value = task.priority;
         document.getElementById('task-deadline').value = task.deadline || "";
         
+        // Carrega subtarefas existentes no array temporário
+        tempSubtasks = [...task.subtasks.map(s => ({...s}))];
+        
         subSection.style.display = 'block';
-        renderSubEditor(task);
+        renderSubEditor();
         modal.classList.add('active');
-    }
-
-    function renderSubEditor(task) {
-        subEditorList.innerHTML = '';
-        task.subtasks.forEach(sub => {
-            const div = document.createElement('div');
-            div.className = 'sub-edit-row';
-            div.innerHTML = `
-                <input type="text" value="${sub.text}" class="input-sub-edit">
-                <button type="button" class="btn-sub-del">❌</button>
-            `;
-            div.querySelector('.input-sub-edit').onchange = (e) => { sub.text = e.target.value; };
-            div.querySelector('.btn-sub-del').onclick = () => {
-                task.subtasks = task.subtasks.filter(s => s.id !== sub.id);
-                renderSubEditor(task);
-            };
-            subEditorList.appendChild(div);
-        });
     }
 
     // 7. Eventos de Formulário
     taskForm.onsubmit = (e) => {
         e.preventDefault();
         const id = document.getElementById('task-id').value;
+        
+        // Limpa subtarefas vazias antes de salvar
+        const validSubtasks = tempSubtasks.filter(s => s.text.trim() !== "");
+
         const data = {
             title: document.getElementById('task-title').value,
             priority: document.getElementById('task-priority').value,
-            deadline: document.getElementById('task-deadline').value
+            deadline: document.getElementById('task-deadline').value,
+            subtasks: validSubtasks
         };
 
         if (id) {
             const task = tasks.find(t => t.id === id);
             Object.assign(task, data);
         } else {
-            tasks.push({ ...data, id: Date.now().toString(), status: 'todo', subtasks: [] });
+            tasks.push({ 
+                ...data, 
+                id: Date.now().toString(), 
+                status: 'todo'
+            });
         }
         modal.classList.remove('active');
         save();
@@ -170,11 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
     openModalBtn.onclick = () => {
         taskForm.reset();
         document.getElementById('task-id').value = "";
-        subSection.style.display = 'none';
+        
+        // Prepara o modal para nova tarefa
+        tempSubtasks = []; 
+        subSection.style.display = 'block'; // Agora sempre visível
+        renderSubEditor();
+        
         modal.classList.add('active');
     };
 
-    const close = () => modal.classList.remove('active');
+    const close = () => {
+        modal.classList.remove('active');
+        tempSubtasks = [];
+    };
+    
     closeModalBtn.onclick = close;
     closeModalX.onclick = close;
 

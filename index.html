@@ -3,87 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskPad Kanban - Gestão de Tarefas</title>
+    <title>TaskPad Kanban</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body>
 
     <header class="topbar">
         <h1>TaskPad</h1>
-        
         <div class="top-controls">
-            <div class="filter-group">
-                <label for="priority-filter">Filtrar:</label>
-                <select id="priority-filter">
-                    <option value="all">Todas as prioridades</option>
-                    <option value="high">Alta</option>
-                    <option value="medium">Média</option>
-                    <option value="low">Baixa</option>
-                </select>
-            </div>
-            
-            <button id="new-task" class="btn-primary">+ Nova tarefa</button>
+            <button id="new-task" class="btn-primary">Nova tarefa</button>
         </div>
     </header>
 
     <main class="board">
-        <section class="column" aria-labelledby="todo-title">
-            <h2 id="todo-title">Pendentes</h2>
-            <div id="todo" class="dropzone" data-status="todo"></div>
+        <section class="column">
+            <h2>Pendentes</h2>
+            <div id="todo" class="dropzone"></div>
         </section>
 
-        <section class="column" aria-labelledby="doing-title">
-            <h2 id="doing-title">Em curso</h2>
-            <div id="doing" class="dropzone" data-status="doing"></div>
-        </section>
-
-        <section class="column" aria-labelledby="done-title">
-            <h2 id="done-title">Concluídas</h2>
-            <div id="done" class="dropzone" data-status="done"></div>
+        <section class="column">
+            <h2>Concluídas</h2>
+            <div id="done" class="dropzone"></div>
         </section>
     </main>
 
-    <div id="modal" class="modal" aria-hidden="true" role="dialog">
+    <div id="modal" class="modal">
         <div class="modal-card">
-            <header class="modal-header">
-                <h3>Detalhes da Tarefa</h3>
-                <button id="close-modal-x" class="close-btn" aria-label="Fechar">&times;</button>
-            </header>
-
+            <h3>Nova Tarefa</h3>
             <form id="task-form">
-                <div class="form-group">
-                    <label for="task-title">Título da Tarefa</label>
-                    <input type="text" id="task-title" placeholder="O que precisa de fazer?" required>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="task-priority">Prioridade</label>
-                        <select id="task-priority">
-                            <option value="low">Baixa</option>
-                            <option value="medium" selected>Média</option>
-                            <option value="high">Alta</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="task-deadline">Prazo</label>
-                        <input type="date" id="task-deadline">
-                    </div>
-                </div>
-
-                <div class="subtasks-section">
-                    <label>Subtarefas</label>
-                    <div id="subtasks-list"></div>
-                    <div class="subtask-input-group">
-                        <input type="text" id="new-subtask" placeholder="Adicionar passo...">
-                        <button type="button" id="add-sub" class="btn-secondary">Adicionar</button>
-                    </div>
-                </div>
+                <input type="text" id="task-title" placeholder="Título da tarefa" required>
+                
+                <select id="task-priority">
+                    <option value="low">Baixa</option>
+                    <option value="medium" selected>Média</option>
+                    <option value="high">Alta</option>
+                </select>
 
                 <div class="modal-actions">
-                    <button type="button" id="cancel-task" class="btn-text">Cancelar</button>
-                    <button type="submit" id="save-task" class="btn-success">Guardar Tarefa</button>
+                    <button type="button" id="cancel-task">Cancelar</button>
+                    <button type="submit" id="save-task">Salvar</button>
                 </div>
             </form>
         </div>

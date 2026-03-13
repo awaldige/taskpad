@@ -1,34 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Estado da Aplicação
     let tasks = JSON.parse(localStorage.getItem('taskpad_pro_final')) || [];
     let searchTerm = "";
-    let tempSubtasks = []; // Array temporário para o Modal
+    let tempSubtasks = []; 
 
-    // 2. Seleção de Elementos
     const modal = document.getElementById('task-modal');
     const taskForm = document.getElementById('task-form');
-    const subSection = document.getElementById('subtasks-edit-section');
     const subEditorList = document.getElementById('subtasks-editor-list');
     const themeToggle = document.getElementById('theme-toggle');
     const searchInput = document.getElementById('search-input');
     const openModalBtn = document.getElementById('open-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const closeModalX = document.getElementById('close-modal-x');
 
-    // 3. Inicialização de Tema
+    // TEMA
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
     themeToggle.innerText = savedTheme === 'dark' ? '☀️' : '🌓';
 
     themeToggle.onclick = () => {
-        const current = document.body.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
+        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         themeToggle.innerText = next === 'dark' ? '☀️' : '🌓';
     };
 
-    // 4. Funções Principais
+    // CORE
     const save = () => {
         localStorage.setItem('taskpad_pro_final', JSON.stringify(tasks));
         render();
@@ -45,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('count-done').innerText = tasks.filter(t => t.status === 'done').length;
     };
 
-    // 5. Renderização dos Cards (Visualização Principal)
+    // RENDER CARDS (Sem o botão + Rápido)
     function render() {
         const todoList = document.getElementById('todo-list');
         const doneList = document.getElementById('done-list');
@@ -63,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.borderLeftColor = `var(--${task.priority})`;
 
             card.innerHTML = `
-                <div class="card-clickable">
+                <div class="card-clickable" style="cursor:pointer">
                     <strong>${task.title}</strong>
                     ${isOverdue ? '<br><span class="overdue-label">⚠️ ATRASADA</span>' : ''}
                     <div class="progress-container"><div class="progress-bar" style="width: ${progress}%"></div></div>
@@ -74,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${s.done ? '✅' : '⬜'} ${s.text}
                         </div>
                     `).join('')}
-                    <button class="btn-quick-add">+ Rápido</button>
                 </div>
                 <div class="card-actions">
                     <div style="display:flex; gap:10px">
@@ -96,10 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 task.status = task.status === 'todo' ? 'done' : 'todo';
                 save();
             };
-            card.querySelector('.btn-quick-add').onclick = () => {
-                const txt = prompt("Nova subtarefa:");
-                if(txt) { task.subtasks.push({ id: Date.now(), text: txt, done: false }); save(); }
-            };
             card.querySelectorAll('.sub-item').forEach(item => {
                 item.onclick = () => {
                     const sid = item.getAttribute('data-subid');
@@ -114,82 +103,55 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCounters();
     }
 
-    // 6. Funções do Modal (Editor de Subtarefas)
+    // MODAL LOGIC
     function renderSubEditor() {
         subEditorList.innerHTML = '';
         tempSubtasks.forEach((sub, index) => {
             const div = document.createElement('div');
             div.className = 'sub-edit-row';
             div.innerHTML = `
-                <input type="text" value="${sub.text}" class="input-sub-edit" placeholder="Nome da subtarefa...">
+                <input type="text" value="${sub.text}" class="input-sub-edit" placeholder="Subtarefa...">
                 <button type="button" class="btn-sub-del">❌</button>
             `;
-            
-            // Atualiza texto no array temporário
-            div.querySelector('.input-sub-edit').onchange = (e) => {
-                tempSubtasks[index].text = e.target.value;
-            };
-            
-            // Remove do array temporário
-            div.querySelector('.btn-sub-del').onclick = () => {
-                tempSubtasks.splice(index, 1);
-                renderSubEditor();
-            };
+            div.querySelector('.input-sub-edit').onchange = (e) => { tempSubtasks[index].text = e.target.value; };
+            div.querySelector('.btn-sub-del').onclick = () => { tempSubtasks.splice(index, 1); renderSubEditor(); };
             subEditorList.appendChild(div);
         });
     }
 
-    // Função para adicionar novo campo de subtarefa no modal
-    // Certifique-se de ter um botão com id="add-sub-field" no HTML (dentro do modal)
-    const addSubFieldBtn = document.getElementById('add-sub-field');
-    if (addSubFieldBtn) {
-        addSubFieldBtn.onclick = () => {
-            tempSubtasks.push({ id: Date.now(), text: "", done: false });
-            renderSubEditor();
-        };
-    }
+    document.getElementById('add-sub-field').onclick = () => {
+        tempSubtasks.push({ id: Date.now(), text: "", done: false });
+        renderSubEditor();
+    };
 
     function editTask(id) {
         const task = tasks.find(t => t.id === id);
         if(!task) return;
-
         document.getElementById('task-id').value = task.id;
         document.getElementById('task-title').value = task.title;
         document.getElementById('task-priority').value = task.priority;
         document.getElementById('task-deadline').value = task.deadline || "";
-        
-        // Carrega subtarefas existentes no array temporário
         tempSubtasks = [...task.subtasks.map(s => ({...s}))];
-        
-        subSection.style.display = 'block';
         renderSubEditor();
         modal.classList.add('active');
     }
 
-    // 7. Eventos de Formulário
     taskForm.onsubmit = (e) => {
         e.preventDefault();
         const id = document.getElementById('task-id').value;
-        
-        // Limpa subtarefas vazias antes de salvar
-        const validSubtasks = tempSubtasks.filter(s => s.text.trim() !== "");
-
+        const validSubs = tempSubtasks.filter(s => s.text.trim() !== "");
         const data = {
             title: document.getElementById('task-title').value,
             priority: document.getElementById('task-priority').value,
             deadline: document.getElementById('task-deadline').value,
-            subtasks: validSubtasks
+            subtasks: validSubs
         };
 
         if (id) {
             const task = tasks.find(t => t.id === id);
             Object.assign(task, data);
         } else {
-            tasks.push({ 
-                ...data, 
-                id: Date.now().toString(), 
-                status: 'todo'
-            });
+            tasks.push({ ...data, id: Date.now().toString(), status: 'todo' });
         }
         modal.classList.remove('active');
         save();
@@ -198,27 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
     openModalBtn.onclick = () => {
         taskForm.reset();
         document.getElementById('task-id').value = "";
-        
-        // Prepara o modal para nova tarefa
         tempSubtasks = []; 
-        subSection.style.display = 'block'; // Agora sempre visível
         renderSubEditor();
-        
         modal.classList.add('active');
     };
 
-    const close = () => {
-        modal.classList.remove('active');
-        tempSubtasks = [];
-    };
-    
-    closeModalBtn.onclick = close;
-    closeModalX.onclick = close;
-
-    searchInput.oninput = (e) => {
-        searchTerm = e.target.value;
-        render();
-    };
+    const close = () => modal.classList.remove('active');
+    document.getElementById('close-modal').onclick = close;
+    document.getElementById('close-modal-x').onclick = close;
+    searchInput.oninput = (e) => { searchTerm = e.target.value; render(); };
 
     render();
 });

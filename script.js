@@ -1,147 +1,103 @@
-let tasks = JSON.parse(localStorage.getItem('taskpad_db')) || [];
+let tasks = JSON.parse(localStorage.getItem('taskpad_lite')) || [];
 
-const DOM = {
-    form: document.getElementById('task-form'),
-    modal: document.getElementById('task-modal'),
-    lists: document.querySelectorAll('.task-list'),
-    inputs: {
-        title: document.getElementById('task-title'),
-        desc: document.getElementById('task-desc'),
-        priority: document.getElementById('task-priority'),
-        deadline: document.getElementById('task-deadline')
-    }
-};
-
-function saveAndRender() {
-    localStorage.setItem('taskpad_db', JSON.stringify(tasks));
+function save() {
+    localStorage.setItem('taskpad_lite', JSON.stringify(tasks));
     render();
 }
 
 function render() {
-    DOM.lists.forEach(list => list.innerHTML = '');
+    document.getElementById('todo-list').innerHTML = '';
+    document.getElementById('done-list').innerHTML = '';
 
     tasks.forEach(task => {
-        const isOverdue = task.deadline && new Date(task.deadline) < new Date().setHours(0,0,0,0) && task.status !== 'done';
         const progress = calculateProgress(task.subtasks);
+        const isOverdue = task.deadline && new Date(task.deadline) < new Date().setHours(0,0,0,0) && task.status !== 'done';
         
         const card = document.createElement('li');
         card.className = `card ${isOverdue ? 'overdue' : ''}`;
-        card.draggable = true;
         card.style.borderLeftColor = `var(--${task.priority})`;
 
         card.innerHTML = `
-            <div onclick="editTask('${task.id}')">
-                <div class="card-header">
-                    <strong>${task.title}</strong>
-                    ${isOverdue ? '<span class="badge-atraso">Atrasado</span>' : ''}
+            <div>
+                <strong style="display:block; margin-bottom:5px;">${task.title}</strong>
+                ${task.deadline ? `<small>📅 ${task.deadline.split('-').reverse().join('/')}</small>` : ''}
+                
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${progress}%"></div>
                 </div>
-                <p style="font-size: 0.85rem; color: #4a5568">${task.desc}</p>
-                ${task.deadline ? `<small class="date-tag">📅 ${formatDate(task.deadline)}</small>` : ''}
-                <div class="progress-container"><div class="progress-bar" style="width: ${progress}%"></div></div>
             </div>
-            <div class="sub-area">
+
+            <div class="subs">
                 ${task.subtasks.map(s => `
                     <div class="sub-item ${s.done ? 'checked' : ''}" onclick="toggleSub('${task.id}', ${s.id})">
                         ${s.done ? '✅' : '⬜'} ${s.text}
                     </div>
                 `).join('')}
-                <button class="btn-add-sub" onclick="addSub('${task.id}')">+ Subtarefa</button>
+                <button onclick="addSub('${task.id}')" style="font-size:0.7rem; cursor:pointer; background:none; border:1px dashed #ccc; width:100%; margin-top:5px;">+ Subtarefa</button>
             </div>
-            <div style="text-align: right; margin-top: 10px;">
-                <button onclick="deleteTask('${task.id}')" style="background:none; border:none; cursor:pointer">🗑️</button>
+
+            <div class="card-actions">
+                <button onclick="deleteTask('${task.id}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
+                <button class="btn-check ${task.status === 'done' ? 'undo' : ''}" onclick="toggleStatus('${task.id}')">
+                    ${task.status === 'done' ? 'Refazer' : 'Concluir ✔'}
+                </button>
             </div>
         `;
 
-        card.addEventListener('dragstart', () => {
-            card.classList.add('dragging');
-            card.dataset.id = task.id;
-        });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
-
-        document.querySelector(`[data-status="${task.status}"]`).appendChild(card);
+        document.getElementById(`${task.status}-list`).appendChild(card);
     });
 }
 
-// --- Funções de Lógica ---
 function calculateProgress(subs) {
     if (!subs.length) return 0;
     return Math.round((subs.filter(s => s.done).length / subs.length) * 100);
 }
 
+function toggleStatus(id) {
+    const task = tasks.find(t => t.id === id);
+    task.status = task.status === 'todo' ? 'done' : 'todo';
+    save();
+}
+
 function addSub(taskId) {
-    const text = prompt("Descrição da subtarefa:");
-    if (!text) return;
-    tasks.find(t => t.id === taskId).subtasks.push({ id: Date.now(), text, done: false });
-    saveAndRender();
+    const text = prompt("Nome da atividade:");
+    if (text) {
+        tasks.find(t => t.id === taskId).subtasks.push({ id: Date.now(), text, done: false });
+        save();
+    }
 }
 
 function toggleSub(taskId, subId) {
     const sub = tasks.find(t => t.id === taskId).subtasks.find(s => s.id === subId);
     sub.done = !sub.done;
-    saveAndRender();
+    save();
 }
 
 function deleteTask(id) {
-    if (confirm("Excluir tarefa?")) {
+    if (confirm("Excluir?")) {
         tasks = tasks.filter(t => t.id !== id);
-        saveAndRender();
+        save();
     }
 }
 
-// --- Drag & Drop ---
-DOM.lists.forEach(list => {
-    list.addEventListener('dragover', e => {
-        e.preventDefault();
-        const dragging = document.querySelector('.dragging');
-        list.appendChild(dragging);
-    });
+// Modal e Form
+const modal = document.getElementById('task-modal');
+document.getElementById('open-modal').onclick = () => modal.classList.add('active');
+document.getElementById('close-modal').onclick = () => modal.classList.remove('active');
 
-    list.addEventListener('drop', () => {
-        const id = document.querySelector('.dragging').dataset.id;
-        tasks = tasks.map(t => t.id === id ? {...t, status: list.dataset.status} : t);
-        saveAndRender();
-    });
-});
-
-// --- Modal ---
-DOM.form.onsubmit = (e) => {
+document.getElementById('task-form').onsubmit = (e) => {
     e.preventDefault();
-    const id = DOM.form.dataset.editId || Date.now().toString();
-    const taskData = {
-        id,
-        title: DOM.inputs.title.value,
-        desc: DOM.inputs.desc.value,
-        priority: DOM.inputs.priority.value,
-        deadline: DOM.inputs.deadline.value,
-        status: DOM.form.dataset.editStatus || 'todo',
-        subtasks: DOM.form.dataset.editId ? tasks.find(t => t.id === id).subtasks : []
-    };
-
-    if (DOM.form.dataset.editId) tasks = tasks.map(t => t.id === id ? taskData : t);
-    else tasks.push(taskData);
-
-    closeModal();
-    saveAndRender();
+    tasks.push({
+        id: Date.now().toString(),
+        title: document.getElementById('task-title').value,
+        priority: document.getElementById('task-priority').value,
+        deadline: document.getElementById('task-deadline').value,
+        status: 'todo',
+        subtasks: []
+    });
+    modal.classList.remove('active');
+    e.target.reset();
+    save();
 };
-
-function editTask(id) {
-    const task = tasks.find(t => t.id === id);
-    DOM.inputs.title.value = task.title;
-    DOM.inputs.desc.value = task.desc;
-    DOM.inputs.priority.value = task.priority;
-    DOM.inputs.deadline.value = task.deadline;
-    DOM.form.dataset.editId = id;
-    DOM.form.dataset.editStatus = task.status;
-    document.getElementById('modal-title').innerText = "Editar Tarefa";
-    DOM.modal.classList.add('active');
-}
-
-function openModal() { DOM.modal.classList.add('active'); document.getElementById('modal-title').innerText = "Nova Tarefa"; }
-function closeModal() { DOM.modal.classList.remove('active'); DOM.form.reset(); delete DOM.form.dataset.editId; }
-
-function formatDate(d) { return d.split('-').reverse().join('/'); }
-
-document.getElementById('open-modal').onclick = openModal;
-document.getElementById('close-modal').onclick = closeModal;
 
 render();

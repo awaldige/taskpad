@@ -30,11 +30,10 @@ O TaskPad permite criar tarefas com prioridades, prazos e subtarefas, acompanhar
 ---
 
 ## 🖼️ Preview
-![IMG_1222](https://github.com/user-attachments/assets/ca59657b-615e-4c23-8952-87fb8e964455)
-![IMG_1223](https://github.com/user-attachments/assets/9a34486c-9937-45d1-87d4-e947ec19c284)
-![IMG_1225](https://github.com/user-attachments/assets/5915ace3-7e69-4318-9d6e-04fd4dd0db1b)
-![IMG_1226](https://github.com/user-attachments/assets/10a01efa-c45a-4d3f-afdc-1409c5846f92)
-![IMG_1227](https://github.com/user-attachments/assets/b681574e-b53e-421d-93fa-cbba10fd8d21)
+
+![IMG_1981](https://github.com/user-attachments/assets/0a85ab27-f78d-442e-a9d2-aa0c768a7342)
+![IMG_1983](https://github.com/user-attachments/assets/2c649a00-ceab-4c09-bd20-b034bf4ab8ff)
+![IMG_1984](https://github.com/user-attachments/assets/c11a3b4c-a18d-4be1-8899-cf5bb6e88445)
 
 ---
 

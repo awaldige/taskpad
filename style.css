@@ -1,90 +1,84 @@
-body{
-font-family:system-ui;
-margin:0;
-background:#f1f5f9;
+:root {
+    --primary: #4a90e2;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --bg: #f4f7f6;
+    --column-bg: #ebedf0;
+    --text: #333;
 }
 
-.topbar{
-display:flex;
-justify-content:space-between;
-padding:15px;
-background:#0f172a;
-color:white;
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
 }
 
-.top-controls{
-display:flex;
-gap:10px;
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.board{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-padding:20px;
+.board {
+    display: flex;
+    gap: 1rem;
+    padding: 2rem;
+    align-items: flex-start;
+    overflow-x: auto;
 }
 
-.column{
-background:white;
-padding:15px;
-border-radius:10px;
-min-height:70vh;
+.column {
+    background: var(--column-bg);
+    border-radius: 8px;
+    width: 300px;
+    min-height: 80vh;
+    padding: 1rem;
 }
 
-.dropzone{
-min-height:200px;
+.dropzone {
+    min-height: 150px;
 }
 
-.card{
-background:#f8fafc;
-padding:10px;
-margin-bottom:10px;
-border-radius:8px;
-cursor:grab;
+/* Cartão de Tarefa */
+.task-card {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: grab;
+    border-left: 5px solid #ccc;
 }
 
-.progress{
-height:6px;
-background:#e2e8f0;
-border-radius:6px;
-margin-top:5px;
+.task-card.priority-high { border-left-color: var(--danger); }
+.task-card.priority-medium { border-left-color: #f1c40f; }
+.task-card.priority-low { border-left-color: var(--success); }
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none; /* Alterar para 'flex' via JS */
+    justify-content: center;
+    align-items: center;
 }
 
-.progress-bar{
-height:6px;
-background:#22c55e;
+.modal-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
 }
 
-.overdue{
-border-left:5px solid red;
-}
-
-.modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.5);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-card{
-background:white;
-padding:20px;
-border-radius:10px;
-width:350px;
-}
-
-.modal-actions{
-margin-top:10px;
-display:flex;
-gap:10px;
-}
-
-@media(max-width:700px){
-
-.board{
-grid-template-columns:1fr;
-}
-
-}
+.form-group { margin-bottom: 1rem; display: flex; flex-direction: column; }
+.form-row { display: flex; gap: 10px; }
+input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }

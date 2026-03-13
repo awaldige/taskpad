@@ -1,83 +1,114 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TaskPad • Pro</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TaskPad • Pro</title>
+
+<meta name="description" content="TaskPad Pro - Gerenciador de tarefas moderno com prioridades, subtarefas e modo escuro.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <h1>📋 TaskPad</h1>
-            <div class="header-actions">
-                <button id="theme-toggle" class="btn-icon-theme" title="Alternar tema">🌓</button>
-                <input type="text" id="search-input" placeholder="Buscar tarefas..." aria-label="Buscar">
-                <button id="open-modal" class="btn-primary"><span>➕</span> Novo</button>
-            </div>
-        </div>
-    </header>
+<header class="main-header">
+<div class="header-container">
 
-    <main class="board">
-        <section class="column">
-            <div class="column-header">
-                <h2>🟡 Pendentes <span id="count-todo" class="count-pill">0</span></h2>
-            </div>
-            <ul id="todo-list" class="task-list" data-status="todo"></ul>
-        </section>
+<h1>📋 TaskPad</h1>
 
-        <section class="column">
-            <div class="column-header">
-                <h2>🟢 Concluídas <span id="count-done" class="count-pill">0</span></h2>
-            </div>
-            <ul id="done-list" class="task-list" data-status="done"></ul>
-        </section>
-    </main>
+<div class="header-actions">
 
-    <div id="task-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3 id="modal-title">Nova Tarefa</h3>
-                <button type="button" id="close-modal-x" class="btn-close-x">&times;</button>
-            </div>
-            
-            <form id="task-form">
-                <input type="hidden" id="task-id">
-                <div class="form-group">
-                    <label for="task-title">Título da Tarefa</label>
-                    <input type="text" id="task-title" placeholder="O que precisa ser feito?" required>
-                </div>
+<button id="theme-toggle" class="btn-icon-theme">🌓</button>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="task-priority">Prioridade</label>
-                        <select id="task-priority">
-                            <option value="low">Baixa</option>
-                            <option value="medium" selected>Média</option>
-                            <option value="high">Alta</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-deadline">Prazo</label>
-                        <input type="date" id="task-deadline">
-                    </div>
-                </div>
+<input type="search" id="search-input" placeholder="Buscar tarefas...">
 
-                <div id="subtasks-edit-section" class="form-group" style="display:none;">
-                    <label>Subtarefas</label>
-                    <div id="subtasks-editor-list" class="sub-editor-container"></div>
-                </div>
+<button id="open-modal" class="btn-primary">
+<span>➕</span> Novo
+</button>
 
-                <div class="modal-footer">
-                    <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+</div>
+</div>
+</header>
 
-    <script src="script.js" defer></script>
+<main class="board">
+
+<section class="column">
+
+<div class="column-header">
+<h2>🟡 Pendentes <span id="count-todo" class="count-pill">0</span></h2>
+</div>
+
+<ul id="todo-list" class="task-list"></ul>
+
+</section>
+
+<section class="column">
+
+<div class="column-header">
+<h2>🟢 Concluídas <span id="count-done" class="count-pill">0</span></h2>
+</div>
+
+<ul id="done-list" class="task-list"></ul>
+
+</section>
+
+</main>
+
+<div id="task-modal" class="modal-overlay">
+
+<div class="modal-card">
+
+<div class="modal-header">
+<h3 id="modal-title">Nova Tarefa</h3>
+<button id="close-modal-x" class="btn-close-x">&times;</button>
+</div>
+
+<form id="task-form">
+
+<input type="hidden" id="task-id">
+
+<div class="form-group">
+<label>Título</label>
+<input type="text" id="task-title" required>
+</div>
+
+<div class="form-row">
+
+<div class="form-group">
+<label>Prioridade</label>
+<select id="task-priority">
+<option value="low">Baixa</option>
+<option value="medium" selected>Média</option>
+<option value="high">Alta</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Prazo</label>
+<input type="date" id="task-deadline">
+</div>
+
+</div>
+
+<div id="subtasks-edit-section" class="form-group" style="display:none;">
+<label>Subtarefas</label>
+<div id="subtasks-editor-list" class="sub-editor-container"></div>
+</div>
+
+<div class="modal-footer">
+<button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
+<button type="submit" class="btn-save">Salvar</button>
+</div>
+
+</form>
+</div>
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>

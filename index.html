@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TaskPad - Um gerenciador de tarefas simples e eficiente estilo Kanban.">
+    <meta name="description" content="TaskPad - Kanban inteligente com prazos e subtarefas.">
     <title>TaskPad • Kanban</title>
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,14 +13,12 @@
     <header class="main-header">
         <div class="header-container">
             <h1>📋 TaskPad</h1>
-            <button id="open-modal" class="btn-primary" aria-label="Adicionar nova tarefa">
-                <span>➕</span> Novo
-            </button>
+            <button id="open-modal" class="btn-primary"><span>➕</span> Novo</button>
         </div>
     </header>
 
     <main class="board">
-        <section class="column" id="col-todo">
+        <section class="column">
             <div class="column-header">
                 <span class="status-badge todo"></span>
                 <h2>Pendentes</h2>
@@ -30,7 +26,7 @@
             <ul id="todo-list" class="task-list" data-status="todo"></ul>
         </section>
 
-        <section class="column" id="col-doing">
+        <section class="column">
             <div class="column-header">
                 <span class="status-badge doing"></span>
                 <h2>Em Execução</h2>
@@ -38,7 +34,7 @@
             <ul id="doing-list" class="task-list" data-status="doing"></ul>
         </section>
 
-        <section class="column" id="col-done">
+        <section class="column">
             <div class="column-header">
                 <span class="status-badge done"></span>
                 <h2>Concluídas</h2>
@@ -47,24 +43,35 @@
         </section>
     </main>
 
-    <div id="task-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+    <div id="task-modal" class="modal-overlay" aria-hidden="true">
         <div class="modal-card">
             <h3 id="modal-title">Nova Tarefa</h3>
-            
             <form id="task-form">
                 <div class="form-group">
                     <label for="task-title">Título</label>
                     <input type="text" id="task-title" placeholder="O que fazer?" required>
                 </div>
-                
                 <div class="form-group">
-                    <label for="task-desc">Detalhes (Opcional)</label>
-                    <textarea id="task-desc" rows="3" placeholder="Ex: Comprar leite e pão..."></textarea>
+                    <label for="task-desc">Detalhes</label>
+                    <textarea id="task-desc" rows="2" placeholder="Descrição opcional..."></textarea>
                 </div>
-
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Prioridade</label>
+                        <select id="task-priority">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-deadline">Prazo</label>
+                        <input type="date" id="task-deadline">
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
-                    <button type="submit" id="save-task" class="btn-save">Salvar Tarefa</button>
+                    <button type="submit" class="btn-save">Salvar</button>
                 </div>
             </form>
         </div>

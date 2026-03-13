@@ -14,7 +14,9 @@
             <h1>📋 TaskPad</h1>
             <div class="header-actions">
                 <button id="theme-toggle" class="btn-icon-theme" title="Alternar tema">🌓</button>
-                <input type="text" id="search-input" placeholder="Buscar tarefas..." aria-label="Buscar">
+                <div class="search-wrapper">
+                    <input type="search" id="search-input" placeholder="Buscar..." aria-label="Buscar">
+                </div>
                 <button id="open-modal" class="btn-primary"><span>➕</span> Novo</button>
             </div>
         </div>
@@ -25,28 +27,28 @@
             <div class="column-header">
                 <h2>🟡 Pendentes <span id="count-todo" class="count-pill">0</span></h2>
             </div>
-            <ul id="todo-list" class="task-list" data-status="todo"></ul>
+            <ul id="todo-list" class="task-list"></ul>
         </section>
 
         <section class="column">
             <div class="column-header">
                 <h2>🟢 Concluídas <span id="count-done" class="count-pill">0</span></h2>
             </div>
-            <ul id="done-list" class="task-list" data-status="done"></ul>
+            <ul id="done-list" class="task-list"></ul>
         </section>
     </main>
 
     <div id="task-modal" class="modal-overlay">
         <div class="modal-card">
-            <div class="modal-header">
-                <h3 id="modal-title">Nova Tarefa</h3>
+            <div class="modal-drag-handle"></div> <div class="modal-header">
+                <h3 id="modal-title">Tarefa</h3>
                 <button type="button" id="close-modal-x" class="btn-close-x">&times;</button>
             </div>
             
             <form id="task-form">
                 <input type="hidden" id="task-id">
                 <div class="form-group">
-                    <label for="task-title">Título da Tarefa</label>
+                    <label for="task-title">Título</label>
                     <input type="text" id="task-title" placeholder="O que precisa ser feito?" required>
                 </div>
 
@@ -65,14 +67,14 @@
                     </div>
                 </div>
 
-               <div id="subtasks-edit-section" class="form-group">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <label style="margin-bottom: 0;">Subtarefas</label>
-        <button type="button" id="add-sub-field" class="btn-small-outline">+ Adicionar</button>
-    </div>
-    <div id="subtasks-editor-list" class="sub-editor-container">
-        </div>
-</div>
+                <div id="subtasks-edit-section" class="form-group">
+                    <div class="sub-header-row">
+                        <label>Subtarefas</label>
+                        <button type="button" id="add-sub-field" class="btn-small-outline">+ Adicionar</button>
+                    </div>
+                    <div id="subtasks-editor-list" class="sub-editor-container"></div>
+                </div>
+
                 <div class="modal-footer">
                     <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
                     <button type="submit" class="btn-save">Salvar</button>
@@ -84,4 +86,3 @@
     <script src="script.js" defer></script>
 </body>
 </html>
-

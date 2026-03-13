@@ -65,11 +65,14 @@
                     </div>
                 </div>
 
-                <div id="subtasks-edit-section" class="form-group" style="display:none;">
-                    <label>Subtarefas</label>
-                    <div id="subtasks-editor-list" class="sub-editor-container"></div>
-                </div>
-
+               <div id="subtasks-edit-section" class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="margin-bottom: 0;">Subtarefas</label>
+        <button type="button" id="add-sub-field" class="btn-small-outline">+ Adicionar</button>
+    </div>
+    <div id="subtasks-editor-list" class="sub-editor-container">
+        </div>
+</div>
                 <div class="modal-footer">
                     <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
                     <button type="submit" class="btn-save">Salvar</button>
@@ -81,3 +84,4 @@
     <script src="script.js" defer></script>
 </body>
 </html>
+

@@ -334,3 +334,106 @@ margin-bottom:6px;
 .sub-edit-row input{
 flex:1;
 }
+/* =====================
+SUBTAREFAS FORM
+===================== */
+
+.sub-add{
+display:flex;
+gap:6px;
+margin-top:6px;
+}
+
+.sub-add input{
+flex:1;
+padding:8px;
+}
+
+.sub-add button{
+background:var(--primary);
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.subtask-item{
+display:flex;
+justify-content:space-between;
+background:var(--bg);
+padding:6px 8px;
+border-radius:6px;
+margin-top:4px;
+font-size:.9rem;
+}
+
+/* =====================
+MELHOR LAYOUT DESKTOP
+===================== */
+
+@media (min-width:900px){
+
+.board{
+grid-template-columns:1fr 1fr;
+}
+
+.column{
+padding:25px;
+}
+
+.card{
+padding:22px;
+}
+
+}
+
+/* =====================
+RESPONSIVO MOBILE
+===================== */
+
+@media (max-width:700px){
+
+.header-container{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+.header-actions{
+width:100%;
+flex-wrap:wrap;
+}
+
+#search-input{
+width:100%;
+}
+
+.board{
+grid-template-columns:1fr;
+padding:10px;
+}
+
+.column{
+min-height:auto;
+}
+
+.card-actions{
+flex-direction:column;
+gap:10px;
+align-items:stretch;
+}
+
+.card-buttons{
+justify-content:space-between;
+}
+
+.btn-check{
+width:100%;
+}
+
+.modal-card{
+width:95%;
+}
+
+}
